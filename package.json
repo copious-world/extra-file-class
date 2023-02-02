@@ -1,0 +1,31 @@
+{
+  "name": "extra-file-class",
+  "version": "1.0.0",
+  "description": "A node.js file operations class with methods wrapping fs/promises",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/copious-world/extra-file-class.git"
+  },
+  "keywords": [
+    "fs",
+    "fsPromises",
+    "async",
+    "file",
+    "read",
+    "write",
+    "JSON",
+    "dir",
+    "object",
+    "cache"
+  ],
+  "author": "R. Leddy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/copious-world/extra-file-class/issues"
+  },
+  "homepage": "https://github.com/copious-world/extra-file-class#readme"
+}

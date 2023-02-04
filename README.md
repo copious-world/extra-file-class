@@ -115,6 +115,8 @@ Take note that the object retrieved from cache may not actually be the exact sam
 
 The cache is not an LRU. It exists to get data in and out of files and keep it in memory. So, it is good for going between runs similar to a database. An application can certainly make an LRU by making calls to remove objects from memory tables at certain intervals. Then, later path accesses will be restored as cache misses, provided the file are still on disk.
 
+The method, **\_file\_remover\_cache(path)**, which is not described below will remove a file from cache without removing the file from disk.
+
 
 ## Methods - FileOperations
 

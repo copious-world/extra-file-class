@@ -163,7 +163,6 @@ The methods, overriden, will be called by methods listed above. For example, **o
 
 #### <u>**dir\_maker**</u>
 
-
 create a directory -- assume parent directory exists -- guards against THROW
 		
 **parameters**
@@ -197,7 +196,7 @@ write string to file -- assume a valid path
 
 * path -- a path to the file that will contain the string
 * str -- a string to be written
-* ce_flags  -- options -- refer to the flags for node.js writeFile 
+* ce\_flags  -- options -- refer to the flags for node.js writeFile 
 
 
 #### <u>**write\_append\_string**</u>
@@ -207,7 +206,7 @@ append string to the end of a file -- assume a valid path -- guards against THRO
 
 * path -- a path to the file that will contain the string
 * str -- a string to be written
-* ce_flags  -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
+* ce\_flags  -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
 
 #### <u>**data\_reader**</u>
 read a file from disk --- any format  -- will THROW
@@ -231,8 +230,8 @@ copy a file from path_1 to path_2 -- assume valid paths -- guards against THROW
 
 **parameters**
 
-* path_1 -- source path
-* path_2 -- destination path
+* path\_1 -- source path
+* path\_2 -- destination path
 
 
 #### <u>**ensure\_directories**</u>
@@ -241,7 +240,9 @@ attempts to construct or verify all directories along the path -- guards against
 **parameters**
 
 * path -- a path to be construted or verified
-* top_dir -- **optional** -- top level directy path under which 
+* top\_dir -- **optional** -- top level directy path under which 
+* is\_file\_path -- if true, this will call the callback on the basename.
+* app\_cb(parent\_path,file\_path) -- a callback that can be used to place the file_path into the final parent directory in a cache table or for other application reasons.
 
 
 #### <u>**exists**</u>
@@ -258,7 +259,7 @@ write string to file -- assume a valid path -- guards against THROW
 
 * path -- a path to the file that will contain the string in JSON format
 * obj -- a JSON stringifiable object
-* ce_flags  -- options -- refer to the flags for node.js writeFile 
+* ce\_flags  -- options -- refer to the flags for node.js writeFile 
 
 
 #### <u>**load\_data\_at\_path**</u>
@@ -285,8 +286,8 @@ write string to file -- ensures path -- guards against THROW
 
 * path -- a path to the file that will contain the string
 * str -- a string to be written
-* ce_flags  -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
-* top_dir -- **optional** -- top level directy path under which 
+* ce\_flags  -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
+* top\_dir -- **optional** -- top level directy path under which 
 
 
 #### <u>**output\_append\_string**</u>
@@ -296,8 +297,8 @@ append string to the end of a file -- assume a valid path -- guards against THRO
 
 * path -- a path to the file that will contain the string
 * str -- a string to be written
-* ce_flags  -- **optional** -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
-* top_dir -- optional as starting point for the directory
+* ce\_flags  -- **optional** -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
+* top\_dir -- optional as starting point for the directory
 
 #### <u>**output\_json**</u>
 write string to file -- assume a valid path -- guards against THROW
@@ -306,9 +307,262 @@ write string to file -- assume a valid path -- guards against THROW
 
 * path -- a path to the file that will contain the string
 * obj -- a JSON stringifiable object
-* ce_flags  -- **optional** -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
-* top_dir -- optional as starting point for the directory
+* ce\_flags  -- **optional** -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
+* top\_dir -- optional as starting point for the directory
 
 ## Method Details - FileOperationsCache
+
+
+#### <u>**dir\_maker**</u>
+
+create a directory -- adds a directory to the cache table, then calls FileOperations`dir_maker`.
+		
+**parameters**
+
+* path -- a path to the directory to be created
+
+
+#### <u>**dir\_remover**</u>
+remove a directory -- removes the directory from the cache table, then calls the FileOperations `dir_remover`.
+
+**parameters**
+
+* upath -- a path to the directory to be remover
+* recursive -- from fsPromises 'rm' -- will remove subdirectories if true
+* force     -- from fsPromises 'rm' -- will remove directories and override stoppage conditions if true
+
+#### <u>**ensure\_directories**</u>
+calls the FileOperations`ensure_directories` with callback provided that the last object is a file. The file will be added to the directory containing the file in the cache table.
+
+**parameters**
+
+* path -- a path to be construted or verified
+* top\_dir -- **optional** -- top level directy path under which 
+* is\_file\_path -- tells the method if a path to a file or directory is being passed. True if it is a file. Does not expect the method to figure this out
+
+
+#### <u>**file\_remover**</u>
+
+remove a file -- first removes the file from the cache table, then calls FileOperations `file_remover`
+
+**parameters**
+
+* path -- a path to the file to be removed
+
+#### <u>**file\_copier**</u>
+Clones a copy of the data in the hash table under the new path. Then, calls FileOperations `file_copier`
+
+**parameters**
+
+* path\_1 -- source path
+* path\_2 -- destination path
+
+
+
+#### <u>**exists**</u>
+Check both the actual disk and the cache table. Returns true if it exists in both.
+
+**parameters**
+
+* path --  a path to the file under test
+
+
+#### <u>**write\_out\_string**</u>
+makes sure that the cache table entry for the file has its data set to the string. Then, it calls FileOperations `write_out_string`
+
+**parameters**
+
+* path -- a path to the file that will contain the string
+* str -- a string to be written
+* ce\_flags  -- options -- refer to the flags for node.js writeFile 
+
+
+
+#### <u>**write\_out\_json**</u>
+makes sure that the cache table entry for the file has its data set to the obj being written to the file as JSON. Then, it calls FileOperations `write_out_json`
+
+**parameters**
+
+* path -- a path to the file that will contain the string in JSON format
+* obj -- a JSON stringifiable object
+* ce\_flags  -- options -- refer to the flags for node.js writeFile 
+
+
+
+#### <u>**load\_json\_data\_at\_path**</u>
+If the file data is in cache, the data stored there will be returned. OTherwise, it assumes there is a cache miss and the FileOperations will be used to load the data from disk. After it is loaded from disk, it will be in cache.
+
+**parameters**
+
+* path -- a path to the file that contains the string to be read
+       
+
+#### <u>**update\_json\_at\_path**</u>
+
+Mark a file CacheTable as changed. This method allows for calling this independently of writing to a file. The file will be updated at the syncing interval if no write operation is performed before. (This allows for changing data structures in an application frequently without having a disk operation at each change.)
+
+**parameters**
+
+* path -- a path to the file that contains the string to be read
+
+
+#### <u>**startup\_sync(delta\_time)**</u>
+
+This starts the synching interval to fire at the `delta_time`. This method is called during construction, using the configuration. It may be called by the application however. 
+
+#### <u>**stop\_sync()**</u>
+
+Turns off the synching interval. 
+
+ 
+## A CacheTable interface
+
+The FileOperationsCache class operates with a cache table class of a known interface. Here is the list of methods that CacheTable classes will need to implement in order to replace the default cache table.
+
+* **constructor(conf)**
+* **init**
+* **add\_dir**
+* **remove\_dir**
+* **add\_file\_to\_dir**
+* **contains**
+* **contains\_file**
+* **file\_data**
+* **set\_file\_data**
+* **all\_changed\_files**
+* **mark\_changed**
+* **clone\_file**
+
+The **constructor** takes a configuration object. This is not used in the default class implementation. But, it is passed nevertheless, and may be useful to a prefered alternate.
+
+The class is assumed to do know operations on disk. Although, some implementations may choose to.
+
+#### <u>**init**</u>
+ 
+The initializer for FileOperationsCache will await this method and must be provided even if empty.
+
+#### <u>**add\_dir**</u>
+
+Adds an empty object to a map `<directory path,objec>`. The object will contain path entries contained in the directory.
+
+**parameters**
+
+* path -- a path to the directory -- becomes the default key in the table.
+
+#### <u>**remove\_dir**</u>
+
+Remove the directory structure from the cache table. If it is not forced, the presence of file will preclude the completion of the task. Works recursively if asked. 
+
+**parameters**
+
+* path -- a path to the directory 
+* recursive -- removes subdirectories
+* force  -- removes files 
+
+#### <u>**add\_file\_to\_dir**</u>
+
+Add a file to the object mapped to by the directory path given. This should be the parent directory of the file. (Does not have to be -- but that may be problematic to some applications.) Only adds the file if the directory has been added already.
+
+**parameters**
+
+* parent\_path -- should be the parent path of the file.
+* file -- the full path of the file. This path is used for synching data.
+
+#### <u>**add\_file**</u>
+
+Puts the file into directory tables and the file table.
+
+Create an object in the file map table of the following form:
+
+```
+{
+    "data" : false,
+    "flags" : {},
+    "is_structured" : false,
+    "changed" : false,
+    "key" : false,
+    "path" : path
+}
+```
+
+This form is considered empty. And, more should be done to populate the field values.
+
+**parameters**
+
+* path -- a path to the file as it occurs on disk.
+
+#### <u>**contains**</u>
+
+Returns true if the provided path is either a directory or a file stored in the cache table.
+
+**parameters**
+
+* path -- a path to the file as it occurs on disk.
+
+
+#### <u>**contains\_file**</u>
+
+Returns true or a key if the file is in the file table. Returns a key if keys are being used by the implementation. Otherwise, returns **false**.
+
+**parameters**
+
+* path -- a path to the file as it occurs on disk.
+
+
+#### <u>**file\_data**</u>
+
+Returns the data field of a file table entry.
+
+**parameters**
+
+* path -- a path to the file as it occurs on disk.
+* fkey -- can only be used if the class is configured to use keys
+
+#### <u>**set\_file\_data**</u>
+
+The file must have been placed in cache. Sets new data. Marks the object as changed.
+
+```
+    set_file_data(path,obj,ce_flags,is_structured) {
+        let file_o = this.file_caches[path]
+        if ( file_o ) {
+            file_o.data = obj
+            file_o.flags = ce_flags
+            file_o.is_structured = is_structured
+            file_o.changed = true
+        }
+    }
+```
+
+**parameters**
+
+* path -- a path to the file as it occurs on disk.
+* obj -- an object to be stored - may be a string.
+* is\_structured -- indicates the object is an object and not a string if true.
+
+#### <u>**all\_changed\_files**</u>
+
+Returns all changed files as a list of file objects (see `add_file`). Called by the sync method.
+
+**no parameters**
+
+#### <u>**mark\_changed**</u>
+
+If a file is stored, indicates that it has been changed and should be written as sync or not
+
+**parameters**
+
+* path -- a path to the file as it occurs on disk.
+* bval -- a boolean value. **true** to add it to the sync list, **false** to remove it.
+
+#### <u>**clone\_file**</u>
+
+Clones (deep copy) the object stored in the data of `path_1` and puts it into the data of a new file entry in `path_2`.
+
+**parameters**
+
+* path\_1 -- a path to the file as it occurs on disk and will be the source of data
+* path\_2 -- a path to the file as it occurs on disk and will be the destination of data
+
+
 
 

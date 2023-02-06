@@ -161,7 +161,7 @@ The methods, overriden, will be called by methods listed above. For example, **o
 
 ## Method Details - FileOperations
 
-#### **`dir_maker``**
+#### **`dir_maker`**
 
 create a directory -- assume parent directory exists -- guards against THROW
 		

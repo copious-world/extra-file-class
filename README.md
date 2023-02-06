@@ -168,7 +168,7 @@ create a directory -- assume parent directory exists -- guards against THROW
 **parameters**
 
 * path -- a path to the directory to be created
-
+* options -- an object options object, for fsPromises.mkdir
 
 #### <u>**dir\_remover**</u>
 remove a directory -- assume parent directory exists --guards against THROW

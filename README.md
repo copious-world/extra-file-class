@@ -14,7 +14,9 @@ npm install --save extra-file-class
 
 ## usage
 
-An application can use either of the two classes. The developer just needs to keep in mind that one of the classes caches and the other doesn't. So, if the application wants things to just go to and from files without keeping things in memory, they application will just use **FileOperations**. 
+An application can use either of the two classes foe file operations. A third class is available for transfering objects to and from files in particular directories.
+
+For file operations, there are two classes. The developer just needs to keep in mind that one of the classes caches and the other doesn't. So, if the application wants things to just go to and from files without keeping things in memory, they application will just use **FileOperations**.
 
 Here is an example for **FileOperations**:
 
@@ -116,6 +118,43 @@ Take note that the object retrieved from cache may not actually be the exact sam
 The cache is not an LRU. It exists to get data in and out of files and keep it in memory. So, it is good for going between runs similar to a database. An application can certainly make an LRU by making calls to remove objects from memory tables at certain intervals. Then, later path accesses will be restored as cache misses, provided the file are still on disk.
 
 The method, **\_file\_remover\_cache(path)**, which is not described below will remove a file from cache without removing the file from disk.
+
+**DirectoryCache** is a third class that can be used to move objects to and from files disk in particular directories. The class **DirectoryCache** uses either of the file operations classes, with the default being the one that does not cache.
+
+Here is an example using **DirectoryCache**:
+
+```
+let conf = was_passed_in
+//
+let dir_fos = new DirectoryCache({
+        "default_firectory" : dirpath,   // a default top level directory op relative to it
+        "object_list" : my_iterable,
+        "file_namer" : (obj) => { return obj.name },  // app specific returns a string
+        "noisy"  : (conf && conf.noisy_files) ? true : false,
+        "crash_cant_load" : (conf && conf.crash_program_on_failing_load_from_cache) ? true : false,
+        "use_caching" : false,		// if true, then use FileOpsCache
+        "backup_interval" : (conf && conf.backup_interval) ? conf.backup_interval : false
+    })
+    
+ async directory_ops() {
+ 	//
+ 	let item_injector = (obj) => { my_iterable.add(obj)  } // or push
+ 	// loads all files in a directory, parses them and then
+ 	// passes them into the item injector
+ 	await dir_fos.load_directory('things',this.item_injector)
+ 	//
+ 	let fos = dir_fos.get_fos() // get the file operations object the dir cache is using
+ 	// do fos ops ....
+ 	// ...
+ 	// then
+ 	await dir_fos.backup_to_directory()   // use configured values
+ }
+ 
+ 
+ directory_ops()
+    
+
+```
 
 
 ## Methods - FileOperations
@@ -484,7 +523,7 @@ The FileOperationsCache class operates with a cache table class of a known inter
 
 The **constructor** takes a configuration object. This is not used in the default class implementation. But, it is passed nevertheless, and may be useful to a prefered alternate.
 
-The class is assumed to do know operations on disk. Although, some implementations may choose to.
+The class is assumed to do no operations on disk. Although, some implementations may choose to.
 
 #### **`init`**
  
@@ -643,4 +682,75 @@ Clones (deep copy) the object stored in the data of `path_1` and puts it into th
 
 
 
+## DirectoryCache
 
+The DirectoryCache class provides two methods to send objects to files in a directory and to load them again later. It may also provide interval based synching.
+
+* **constructor(conf)**
+* **load\_directory**
+* **backup\_to\_directory**
+* **get_fos**
+* **stop**
+
+The **constructor** takes a configuration object which defines defaults required for operation.  Here are the fields that should be in the configuration object:
+	
+1. **default\_directory**  -- a top level directory use when parameters do mention it
+2. **file\_namer**	-- a function or a path to a module 
+3. **object\_list**	-- an iterable shared by this class with the application
+4. **use\_caching** -- if true, *FileOperationsCache* will be used instead of *FileOperations*
+5. **noisy** -- report errors 
+6. **crash\_cant\_load** -- if loading fails then exit the program
+7. **backup\_interval** -- in miliseconds 
+	
+
+
+#### **load\_directory**
+ 
+Locates a directory and then loads all of its files, expecting them to contain JSON objects. Calls on JSON parsing.
+
+
+**parameters**
+
+* path -- a path to the directory, which will be below the default directory
+* item\_injector -- a one parameter function, where the parameter should be a parsed JSON object from one of the files.
+* base\_dir -- (optional) -- if specified, this is the top level directory instead of the configured one.
+* after_action -- (optional) -- a function to call after loading.
+
+----
+
+#### **backup\_to\_directory**
+
+Write a list of objects to files, named by the file namer function, configured. All files are written to the base directory if specified or to the default base directory, configured.
+
+**parameters**
+
+* file\_namer -- (optional) -- a one parameter function that takes an object from the list nad figured a name for it. If not specified, the default, configured, is used.
+* base\_dir -- (optinal) -- if specified, this is the top level directory instead of the configured one.
+* list -- (optional) -- an iterable of objects to write to files. If not specified, this method attempts to use the configured iterable.
+* ce\_flags -- (optional) -- the flags to be passed to `write_json_string`
+
+----
+
+#### **get\_fos**
+
+Return the reference to the file operations object that this DirectoryCache object is using.
+
+----
+
+
+#### **stop**
+
+Turn off the backup interval. 
+
+----
+
+#### **start**
+
+Turn on the backup interval with delta time passed to it.
+
+**parameters**
+
+* b\_interval --  The delta time between calls to **backup\_to\_directory**
+
+
+----

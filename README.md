@@ -167,6 +167,8 @@ let dir_fos = new DirectoryCache({
 * **data\_reader**
 * **json\_data\_reader**
 * **file\_copier**
+* **file\_mover**
+* **ensured\_file\_mover**
 * **ensure\_directories**
 * **exists**
 * **write\_out\_json**
@@ -278,7 +280,43 @@ read a JSON formatted file from disk -- will THROW
 
 
 #### **`file_copier`**
-copy a file from path_1 to path_2 -- assume valid paths -- guards against THROW
+copy a file from path\_1 to path\_2 -- assume valid paths -- guards against THROW
+
+**parameters**
+
+* path\_1 -- source path
+* path\_2 -- destination path
+
+----
+
+#### **`ensured_file_copier`**
+move a file from path\_1 to path\_2 -- assume valid paths for the source -- guards against THROW
+
+> **ensured\_file\_copier**  calls **file\_copier** after calling **ensure\_directories** applied to path\_2.
+
+**parameters**
+
+* path\_1 -- source path
+* path\_2 -- destination path
+
+
+
+#### **`file_mover `**
+move a file from path\_1 to path\_2 -- assume valid paths -- guards against THROW
+
+> **file\_mover** calls **file\_copier** and then removes the source file after the copy is successful.
+
+**parameters**
+
+* path\_1 -- source path
+* path\_2 -- destination path
+
+----
+
+#### **`ensured_file_mover `**
+move a file from path\_1 to path\_2 -- assume valid paths for the source -- guards against THROW
+
+> **ensured\_file\_mover**  calls **ensured\_file\_copier** and then removes the source file after the copy is successful.
 
 **parameters**
 

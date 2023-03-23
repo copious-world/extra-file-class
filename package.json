@@ -1,6 +1,6 @@
 {
   "name": "extra-file-class",
-  "version": "0.9.12",
+  "version": "0.9.15",
   "description": "A node.js file operations class with methods wrapping fs/promises",
   "main": "index.js",
   "scripts": {

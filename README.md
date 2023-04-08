@@ -4,7 +4,9 @@ A node.js file operations class with methods wrapping fs/promises
 
 This module provides two classes with methods that make some file operations simple to use.
 
-The first classes provide simple wrappers. While the second class provides wrappers that also keep data in memory under the aegis of a caching object. The caching object may be configured. 
+The first classes provide simple wrappers. While the second class provides wrappers that also keep data in memory under the aegis of a caching object. The caching object may be configured.
+
+> Also, since 0.9.18, fs and fs/promsises are accessible via this class. [(See below)](#access-fs)
 
 ## install 
 
@@ -26,7 +28,7 @@ const {FileOperations} = require('extra-file-class')
 let conf = false
 let fos = new FileOperations(conf)
 
-async useit() {
+async function useit() {
 	let obj = {
 		"gnarly" : "json",
 		"thing" : "you want on disk"
@@ -155,6 +157,34 @@ let dir_fos = new DirectoryCache({
     
 
 ```
+
+
+<a name="access-fs" > </a>
+### @= accessing node:fs and node:fs/promises
+
+By a simple means of having the class constructor copy the top level fields of the `fs` and `fs/promises` classes, instances of FileOperations and FileOperationsCache can stand in for one of the node.js modules and provide another in a field. The choice made is to treat `fs/promises` as if it were the parent class of FileOperations, extended by FileOperationsCache. And, the field `fs` has been added to the instance object. (This is done during instance construction.)
+
+For example, the following program will run:
+
+```
+const {FileOperations} = require('extra-file-class')
+
+let conf = false
+let fos = new FileOperations(conf)
+
+async useit() {
+	let obj = {
+		"gnarly" : "json",
+		"thing" : "you want on disk"
+	}
+	await fos.writeFile('./a/place/on/disk',JSON.stringify(obj))
+	let obj2 = JSON.parse(fos.fs.readFileSync('./a/place/on/disk').toString())
+	console.dir(obj2)
+}
+
+```
+
+
 
 
 ## Methods - FileOperations

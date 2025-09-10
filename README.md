@@ -1,10 +1,20 @@
 # extra-file-class
 
-A node.js file operations class with methods wrapping fs/promises
+A node.js file operations class with methods wrapping fs/promises. Adds methods and options for caching, directory caching, path compilation.
 
-This module provides two classes with methods that make some file operations simple to use.
+>***This module may serve as a drop-in replacement for fs/promises.***
 
-The first classes provide simple wrappers. While the second class provides wrappers that also keep data in memory under the aegis of a caching object. The caching object may be configured.
+Otherwise, this module provides several classes with methods that make some file operations simple to use.
+
+* **FileOperations** -- An extension of fs/promsises
+* **FileOperationsCache** -- An extension of th class FileOperations with caching
+* **DirectoryCache** -- A class object that manages objects stored in directories
+* **PathManager** -- A drop-in replacement for node.js path module with path syntax extensions and path mapping.
+
+> Version 1.0.0 adds support for web page files as well. These modules are accessible via roll-up. [(See below)](#web-fs)
+> 
+> Aliases for methods named as in `fs-extra` are provided for asynchronous cases.
+> 
 
 > Also, since 0.9.18, fs and fs/promsises are accessible via this class. [(See below)](#access-fs)
 
@@ -15,6 +25,59 @@ npm install --save extra-file-class
 ```
 
 ## usage
+
+This module has been used in other modules that can be found under [copious-world](https::/github.com/copious-world) on github. 
+
+### importing/requiring
+
+In most cases, the classes have been imported and instantiated in the applications. In the 1.0.0 release, the `require` statement (or import) statement can be used to get the class instance.
+
+The following returns an instance of ***FileOperations***, without configuration.
+
+```
+const fs_promise = require('extra-file-class')()
+```
+
+The next statement does the same:
+
+```
+const fs_promise = require('extra-file-class')('dropin')
+```
+
+A configuration can be passed:
+
+```
+const fs_promise = require('extra-file-class')('dropin',config)
+```
+
+An instance of the file caching class can be returned:
+
+```
+const fs_cache = require('extra-file-class')('cache',config)
+```
+
+The instance provides acccess to the `fs` module as a field of the instances, e.g.:
+
+```
+const fs = fs_promise.fs
+```
+
+In any case, the classes can be imported from the module and then instantiated under the control of the application, as such:
+
+```
+const {FileOperations, FileOperationsCache, DirectoryCache, PathManager} = require('xtra-file-class');
+
+const fops = new FileOperations(config)
+let fs_promise = fops
+const fopsc = new FileOperationsCache(config)
+cons dirc = new DirectoryCache(config)
+cons path = new PathManager(config)
+
+```
+
+
+## working with the classes
+
 
 An application can use either of the two classes foe file operations. A third class is available for transfering objects to and from files in particular directories.
 

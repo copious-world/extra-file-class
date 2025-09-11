@@ -18,9 +18,8 @@
     "file",
     "read",
     "write",
-    "JSON",
     "dir",
-    "object",
+    "JSON",
     "cache"
   ],
   "author": "R. Leddy",

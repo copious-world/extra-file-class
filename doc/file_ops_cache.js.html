@@ -1,4 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: file_ops_cache.js</title>
 
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: file_ops_cache.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
 const FileOperations = require('./file_ops')
 const node_path = require('path')
 
@@ -14,7 +42,7 @@ const DEFAULT_SYNC_DELTA_TIME = 30000   // half a minute
  * -- default cache table behavior
  * -- abstract method framework
  * 
- * This is a default (stopgap) caching object, provided to act as the cache. But, a more robust verision of this object may be 
+ * This is a default (stopgap) caching object, provided to act as the cache. But, a more robust verision this object may be 
  * provided via configuration with the understanding that the provided object will implement the same interface
  * as the default object.
  * 
@@ -24,14 +52,7 @@ class DefaultCacheTable {
     /**
      * DefaultCacheTable.constructor
      * 
-     * Initializes global maps, one for files and one for directories.
-     * All files and directories are found by path (or hash of path) in these global maps.
-     * 
-     * When directories are maintained, sub directories and files within the maintained directory
-     * will be accessed by the directory object. The file will be found in the file cache and the 
-     * directories will be found in the directory cache.
-     * 
-     * @param {object} conf 
+     * @param {*} conf 
      */
     constructor(conf) {
         //
@@ -47,9 +68,7 @@ class DefaultCacheTable {
     }
 
     /**
-     * init
      * 
-     * This method is included abstractly allowing for optional override in the descendants
      */
     async init() {
         // initialization
@@ -58,8 +77,6 @@ class DefaultCacheTable {
 
     /**
      * add_dir
-     * 
-     * Includes a key for the path in the caching object and links the key to an empty object
      * 
      * @param {string} path 
      */
@@ -72,9 +89,6 @@ class DefaultCacheTable {
 
     /**
      * remove_dir
-     * 
-     * removes the directory from the cache and removes
-     * any cache based sub directories as well.
      * 
      * @param {string} upath 
      * @param {boolean} recursive 
@@ -106,23 +120,18 @@ class DefaultCacheTable {
     /**
      * add_file_to_dir
      * 
-     * Finds the dir cache object for the containing directory.
-     * Adds to the map of the containing directory
-     * 
      * @param {string} parent_path 
      * @param {string} file 
      */
     add_file_to_dir(parent_path,file) {
         let dir_o = this.dir_caches[parent_path]
         if ( dir_o ) {
-            dir_o[file] = true  // detailed information will be in the global file cache
+            dir_o[file] = true
         }
     }
 
     /**
      * add_file
-     * 
-     * Adds a file as a new and empty object to caches and the containind directory.
      * 
      * @param {string} path 
      */
@@ -143,8 +152,6 @@ class DefaultCacheTable {
     /**
      * remove_file
      * 
-     * Deletes file data from the global file cache
-     * 
      * @param {string} fpath 
      */
     remove_file(fpath) {
@@ -156,11 +163,8 @@ class DefaultCacheTable {
     /**
      * contains
      * 
-     * check to see if the path is maintained anywhere as a file or a directory 
-     * by checking the global file and directory caches
-     * 
      * @param {string} path 
-     * @returns boolean
+     * @returns 
      */
     contains(path) {
         if ( this.dir_caches[path] ) return true
@@ -171,11 +175,8 @@ class DefaultCacheTable {
     /**
      * contains_file
      * 
-     * returns false is not in the global file cache. 
-     * for present files returns true or (if a file has a hash key) as string
-     * 
      * @param {string} path 
-     * @returns string | boolean
+     * @returns 
      */
     contains_file(path) {
         let file_o = this.file_caches[path]
@@ -190,12 +191,9 @@ class DefaultCacheTable {
     /**
      * file_data
      * 
-     * Search file caches and possibly key maps for the file object.
-     * The reference to the file data will be in the "data" field of the object if found.
-     * 
      * @param {string} path 
-     * @param {string} fkey (optional)
-     * @returns buffer | string
+     * @param {string} fkey 
+     * @returns 
      */
     file_data(path,fkey) { 
         let file_o = false
@@ -209,11 +207,6 @@ class DefaultCacheTable {
 
     /**
      * set_file_data
-     * 
-     * When writing the file, the data will be captured in the file object 
-     * and when read it will be pulled from the `data` field of the file object.
-     * 
-     * When the data is set, the file is marked as changed.
      * 
      * @param {string} path 
      * @param {object} obj 
@@ -234,8 +227,6 @@ class DefaultCacheTable {
     /**
      * all_changed_files
      * 
-     * Extract the list of file objects that have been changed from the file cache.
-     * 
      * @returns array
      */
     all_changed_files() {
@@ -252,8 +243,6 @@ class DefaultCacheTable {
     /**
      * mark_changed
      * 
-     * Aking to `touch`. The file will be marked as changed even if no other operation has been performed on it. 
-     * 
      * @param {string} path 
      * @param {object} val 
      */
@@ -266,10 +255,6 @@ class DefaultCacheTable {
 
     /**
      * clone_file
-     * 
-     * With the understanding that a file contains some JavScript object that can be 
-     * handles as JSON, this method obtains the data object from the file cache and
-     * stored a clone of the object under a new path, `path_2`. 
      * 
      * @param {string} path_1 
      * @param {string} path_2 
@@ -308,7 +293,7 @@ class FileOperationsCache extends FileOperations {
      * FileOperationsCache.constructor
      * 
      * 
-     * @param {*object} conf 
+     * @param {*} conf 
      */
     constructor (conf) {
         super(conf)
@@ -316,7 +301,7 @@ class FileOperationsCache extends FileOperations {
         this.conf = conf
         //
         this.CacheTable = DefaultCacheTable
-        if ( this.conf && (this.conf.cache_table !== undefined) ) {
+        if ( this.conf &amp;&amp; (this.conf.cache_table !== undefined) ) {
             if ( typeof this.conf.cache_table === 'string' ) {
                 this.CacheTable = require(this.conf.cache_table)
             } else if ( typeof this.conf.cache_table === 'object' ) {
@@ -325,7 +310,7 @@ class FileOperationsCache extends FileOperations {
             // else revert to default
         }
         //
-        this.configured_delta_time = (conf && conf.sync_delta) ? conf.sync_delta : DEFAULT_SYNC_DELTA_TIME
+        this.configured_delta_time = (conf &amp;&amp; conf.sync_delta) ? conf.sync_delta : DEFAULT_SYNC_DELTA_TIME
         //
         this.cache_table = new this.CacheTable(conf)
         //
@@ -344,9 +329,9 @@ class FileOperationsCache extends FileOperations {
      * 
      * -- create a directory --- create a matching cache path -- assume parent directory exists
      * 
-     * @param {string} path -- a path to the directory to be created
+     * @param {*} path -- a path to the directory to be created
      * 
-     * @returns boolean
+     * @returns 
      */
     async dir_maker(path) {
         await this.cache_table.add_dir(path)
@@ -359,11 +344,11 @@ class FileOperationsCache extends FileOperations {
      * -- remove a directory -- assume parent directory exists
      * -- guards against THROW
      * 
-     * @param {string} upath -- a path to the directory to be removed
-     * @param {boolean} recursive -- from fsPromises 'rm' -- will remove subdirectories if true
-     * @param {boolean} force -- from fsPromises 'rm' -- will remove directories and override stoppage conditions if tru
+     * @param {*} upath -- a path to the directory to be removed
+     * @param {*} recursive -- from fsPromises 'rm' -- will remove subdirectories if true
+     * @param {*} force -- from fsPromises 'rm' -- will remove directories and override stoppage conditions if tru
      * 
-     * @returns boolean
+     * @returns 
      */
     async dir_remover(upath,recursive,force) {
         await this.cache_table.remove_dir(upath,recursive,force)
@@ -380,7 +365,7 @@ class FileOperationsCache extends FileOperations {
      * @param {string} path -- a path to the file to be removed
      * @param {string} top_dir -- an optional top level directy path under which directories will be created 
      * @param {boolean} is_file_path -- optional -- true if the path is for a file (does not try to figure this out)
-     * @returns string | boolean
+     * @returns 
      */
     async ensure_directories(path,top_dir,is_file_path) {
         let addinfile = (parent_path,file) => {   // the file is known to be bottom of the path
@@ -396,10 +381,11 @@ class FileOperationsCache extends FileOperations {
      * -- create a directory --- create a matching cache path -- assume parent directory exists
      * -- guards against THROW
      * 
-     * @param {string} path -- a path to the directory to be created
+     * @param {*} path -- a path to the directory to be created
+     * @returns 
      */
     async _file_entry_maker(path) {
-        this.cache_table.add_file(path)
+        return this.cache_table.add_file(path)
     }
 
     /**
@@ -417,7 +403,7 @@ class FileOperationsCache extends FileOperations {
      * file_remover
      * 
      * @param {string} path 
-     * @returns boolean
+     * @returns 
      */
     async file_remover(path) {
         this.cache_table.remove_file(path)
@@ -431,8 +417,8 @@ class FileOperationsCache extends FileOperations {
      * -- guards against THROW
      * 
      * 
-     * @param {string} path_1 -- source path
-     * @param {string} path_2 -- destination path
+     * @param {*} path_1 -- source path
+     * @param {*} path_2 -- destination path
      * @returns boolean
      */
     async file_copier(path_1,path_2) {
@@ -458,7 +444,7 @@ class FileOperationsCache extends FileOperations {
      * 
      * @param {string} path -- a path to the file under test
      * @param {number} app_flags 
-     * @returns boolean
+     * @returns 
      */             
     async exists(path,app_flags) {
         let on_disk = await super.exists(path,app_flags)
@@ -476,10 +462,10 @@ class FileOperationsCache extends FileOperations {
      * -- guards against THROW
      * 
      * 
-     * @param {string} path -- a path to the file that will contain the string
-     * @param {string} str -- a string to be written
-     * @param {number} ce_flags -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
-     * @returns boolean
+     * @param {*} path -- a path to the file that will contain the string
+     * @param {*} str -- a string to be written
+     * @param {*} ce_flags -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
+     * @returns 
      */
     async write_out_string(path,str,ce_flags) {
         try {
@@ -507,9 +493,9 @@ class FileOperationsCache extends FileOperations {
      * -- guards against THROW
      * 
      * 
-     * @param {string} path -- a path to the file that will contain the string
-     * @param {object} obj -- a JSON stringifiable object
-     * @param {number} ce_flags -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
+     * @param {*} path -- a path to the file that will contain the string
+     * @param {*} obj -- a JSON stringifiable object
+     * @param {*} ce_flags -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
      * @returns boolean -- false on failing either stringify or writing
      */
     async write_out_json(path,obj,ce_flags) {
@@ -538,7 +524,7 @@ class FileOperationsCache extends FileOperations {
      * -- guards against THROW
      * 
      * @param {string} path -- a path to the file that contains the string to be read
-     * @returns string | buffer | boolean
+     * @returns 
      */        
     async load_json_data_at_path(path) {
         try {
@@ -559,7 +545,7 @@ class FileOperationsCache extends FileOperations {
         } catch (e) {
             console.log(">>-------------load_json_data read------------------------")
             console.log(e)
-            console.log("<<-------------------------------------")
+            console.log("&lt;&lt;-------------------------------------")
         }
         return false
     }
@@ -572,7 +558,7 @@ class FileOperationsCache extends FileOperations {
      * -- guards against THROW
      * 
      * @param {string} path -- a path to the file that will contain the string
-     * @returns boolean
+     * @returns 
      */
     update_at_path(path) {
         try {
@@ -604,7 +590,7 @@ class FileOperationsCache extends FileOperations {
             let file_name = file_info.path
             if ( (typeof data === "string") || !(file_info.structured) ) {
                 await this.write_out_string(file_name,data,flags)
-            } else if ( (typeof data === "object") && file_info.structured ) {
+            } else if ( (typeof data === "object") &amp;&amp; file_info.structured ) {
                 await this.write_out_json(file_name,data,flags)
             }
             this.cache_table.mark_changed(path,false)
@@ -641,3 +627,26 @@ class FileOperationsCache extends FileOperations {
 
 
 module.exports = FileOperationsCache
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DefaultCacheTable.html">DefaultCacheTable</a></li><li><a href="DirectoryCache.html">DirectoryCache</a></li><li><a href="FileOperations.html">FileOperations</a></li><li><a href="FileOperationsCache.html">FileOperationsCache</a></li><li><a href="FsExtra.html">FsExtra</a></li><li><a href="PathManager.html">PathManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Oct 20 2025 16:21:21 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

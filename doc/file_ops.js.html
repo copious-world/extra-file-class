@@ -1,4 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: file_ops.js</title>
 
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: file_ops.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
 const fsPromises = require('fs/promises')
 const fs = require('fs')
 const path = require('path')
@@ -229,7 +257,7 @@ class FileOperations {
      * -- guards against THROW
      * 
      * @param {string} path -- a path to the file to be removed
-     * @returns boolean
+     * @returns 
      */
     async file_remover(path) {
         try {
@@ -258,7 +286,7 @@ class FileOperations {
      * @param {string} path -- a path to the file that will contain the string
      * @param {string} str -- a string to be written
      * @param {object} ce_flags -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
-     * @returns boolean
+     * @returns 
      */
     async write_out_string(path,str,ce_flags) {
         try {
@@ -290,7 +318,7 @@ class FileOperations {
      * @param {string} path -- a path to the file that will contain the string
      * @param {string} str -- a string to be written
      * @param {object} ce_flags -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
-     * @returns boolean
+     * @returns 
      */
     async write_append_string(path,str,ce_flags) {
         try {
@@ -322,7 +350,7 @@ class FileOperations {
      * 
      * 
      * @param {string} a_path -- a path to the file that contains the string to be read
-     * @returns buffer
+     * @returns 
      */ 
     async data_reader(a_path) {             // possible THROW
         return await fsPromises.readFile(a_path)
@@ -455,7 +483,7 @@ class FileOperations {
      * 
      * @param {string} path -- a path to the file under test
      * @param {number} app_flags 
-     * @returns boolean
+     * @returns 
      */         
     async exists(path,app_flags) {
         try {
@@ -516,7 +544,7 @@ class FileOperations {
             console.log(">>-------------load_data read------------------------")
             console.log(e)
             console.log(path)
-            console.log("<<-------------------------------------")
+            console.log("&lt;&lt;-------------------------------------")
         }
         return false
     }
@@ -541,7 +569,7 @@ class FileOperations {
             console.log(">>-------------load_json_data read------------------------")
             console.log(e)
             console.log(path)
-            console.log("<<-------------------------------------")
+            console.log("&lt;&lt;-------------------------------------")
         }
         return false
     }
@@ -692,9 +720,9 @@ class FsExtra extends FileOperations {
     /**
      * copySync
      * 
-     * @param {string} src 
-     * @param {string} dest 
-     * @param {object} opts 
+     * @param {*} src 
+     * @param {*} dest 
+     * @param {*} opts 
      */
     copySync(src, dest, opts = {}) {
         try {
@@ -712,13 +740,13 @@ class FsExtra extends FileOperations {
     /**
      * move
      * 
-     * @param {string} src 
-     * @param {string} dest 
-     * @param {object} opts 
-     * @returns bollean
+     * @param {*} src 
+     * @param {*} dest 
+     * @param {*} opts 
+     * @returns 
      */
     async move (src, dest, opts = {}) {
-        if ( await this.exists(dest) && !opts.overwrite ) {
+        if ( await this.exists(dest) &amp;&amp; !opts.overwrite ) {
             return false
         }
         return await this.file_mover(src,dest) 
@@ -734,7 +762,7 @@ class FsExtra extends FileOperations {
      */
     moveSync (src, dest, opts) {
         //
-        if ( fs.existsSync(dest) && !opts.overwrite ) {
+        if ( fs.existsSync(dest) &amp;&amp; !opts.overwrite ) {
             return false
         }
         //
@@ -868,7 +896,7 @@ class FsExtra extends FileOperations {
         //
         let {srcStat, dstStat} = this.getStats(srcpath, dstpath, {'dereference' : true})
 
-        if (dstStat && this.areIdentical(srcStat, dstStat)) return
+        if (dstStat &amp;&amp; this.areIdentical(srcStat, dstStat)) return
 
         const containing_dir = path.dirname(dstpath)
 
@@ -883,14 +911,14 @@ class FsExtra extends FileOperations {
     /**
      * createLinkSync
      * 
-     * @param {string} srcpath 
-     * @param {string} dstpath 
+     * @param {*} srcpath 
+     * @param {*} dstpath 
      * @returns boolean
      */
     createLinkSync(srcpath, dstpath) {
         let {srcStat, dstStat} = this.getStatsSync(srcpath, dstpath, {'dereference' : true})
         //
-        if (dstStat && this.areIdentical(srcStat, dstStat)) return
+        if (dstStat &amp;&amp; this.areIdentical(srcStat, dstStat)) return
         //
         const containing_dir = path.dirname(dstpath)
         try {
@@ -917,7 +945,7 @@ class FsExtra extends FileOperations {
 
         let {srcStat, dstStat} = await this.getStats(src_p, dst_p)
 
-        if (srcStat && srcStat.isSymbolicLink()) {
+        if (srcStat &amp;&amp; srcStat.isSymbolicLink()) {
             if ( this.areIdentical(srcStat, dstStat) ) return
         }
 
@@ -966,7 +994,7 @@ class FsExtra extends FileOperations {
      * @param {string} str 
      * @param {string} encoding 
      * 
-     * @returns boolean
+     * @returns 
      */
     async outputFile(path, str, encoding = 'utf-8') {
         return await this.output_string(path,str,ce_flags)
@@ -1092,8 +1120,8 @@ class FsExtra extends FileOperations {
     makeDirSync(dir, options) {
         //
         //checkPath(dir)
-        let its_mode = (typeof options === 'object') && (typeof options.mode === 'string' || typeof options.mode === 'number') ? options.mode : undefined
-        if ( !its_mode && typeof options === 'number' ) its_mode = options
+        let its_mode = (typeof options === 'object') &amp;&amp; (typeof options.mode === 'string' || typeof options.mode === 'number') ? options.mode : undefined
+        if ( !its_mode &amp;&amp; typeof options === 'number' ) its_mode = options
     
         return fs.mkdirSync(dir, {
             mode: its_mode,
@@ -1120,26 +1148,32 @@ class FsExtra extends FileOperations {
     ensureDirSync(dir, options) { return this.makeDirSync (dir, options) }
 
 
+    // 24
+    /**
+     * existsSync
+     * @param {*} path 
+     * @returns 
+     */
+    existsSync(path) {  // sync version
+        return fs.existsSync(path)
+    }
+
     // 25
     /**
      * pathExists
-     * 
-     * this is an alias
      * 
      * @param {string} path 
      * @returns boolean
      */
     pathExists(path) {
-        return fs.existsSync(path)
+        return this.existsSync(path)
     }
 
     // 26
     /**
      * removeSync
      * 
-     * this is nearly an alias, but sets `recursive` and `force`
-     * 
-     * @param {string} path 
+     * @param {*} path 
      */
     removeSync(path) {
         fs.rmSync(path, { recursive: true, force: true })
@@ -1149,8 +1183,8 @@ class FsExtra extends FileOperations {
     /**
      * remove
      * 
-     * @param {string} path 
-     * @param {Function} callback 
+     * @param {*} path 
+     * @param {*} callback 
      */
     remove(path,callback) {
         try {
@@ -1224,16 +1258,14 @@ class FsExtra extends FileOperations {
     /**
      * areIdentical
      * 
-     * compares fields of a stat objects including: dev and ino
-     * 
-     * @param {object} srcStat 
-     * @param {object} destStat 
+     * @param {*} srcStat 
+     * @param {*} destStat 
      */
     areIdentical(srcStat, destStat) {
         return (destStat.ino !== undefined)
-                 && (destStat.dev !== undefined) 
-                 && (destStat.ino === srcStat.ino)
-                 && (destStat.dev === srcStat.dev)
+                 &amp;&amp; (destStat.dev !== undefined) 
+                 &amp;&amp; (destStat.ino === srcStat.ino)
+                 &amp;&amp; (destStat.dev === srcStat.dev)
     }
 
     /**
@@ -1252,3 +1284,26 @@ class FsExtra extends FileOperations {
 
 
 module.exports = FsExtra  // as file operations ... see index.js
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DefaultCacheTable.html">DefaultCacheTable</a></li><li><a href="DirectoryCache.html">DirectoryCache</a></li><li><a href="FileOperations.html">FileOperations</a></li><li><a href="FileOperationsCache.html">FileOperationsCache</a></li><li><a href="FsExtra.html">FsExtra</a></li><li><a href="PathManager.html">PathManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Oct 20 2025 16:21:21 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

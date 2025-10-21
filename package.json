@@ -1,10 +1,11 @@
 {
   "name": "extra-file-class",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A node.js file operations class with methods wrapping fs/promises",
   "main": "index.js",
   "scripts": {
-    "test": "node tests/index.js"
+    "test": "node tests/index.js",
+    "gen-docs": "jsdoc --configure ./tools/jsdoc.conf --verbose"
   },
   "repository": {
     "type": "git",

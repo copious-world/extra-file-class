@@ -22,3 +22,10 @@ module.exports.FileOperations = FileOperations
 module.exports.FileOperationsCache = FileOperationsCache
 module.exports.DirectoryCache = DirectoryCache
 module.exports.PathManager = PathManager
+
+
+/**
+ * Note that this class has just four files and exports five classes.
+ * 
+ * 
+ */

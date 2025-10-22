@@ -18,9 +18,11 @@ Otherwise, this module provides several classes with methods that make some file
 
 > Also, since 0.9.18, fs and fs/promsises are accessible via this class. [(See below)](#access-fs)
 
-## Affiliation
+## affiliation
 
 This package is produced buy [copious.world](https://www.copious.world)
+
+![copious.world logp0](https://www.copious.world/copiousLogo.svg "copious.world")
 
 ## install 
 

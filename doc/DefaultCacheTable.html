@@ -33,7 +33,7 @@
             <div class="class-description"><p>Class: DefaultCacheTable</p>
 <p>-- default cache table behavior
 -- abstract method framework</p>
-<p>This is a default (stopgap) caching object, provided to act as the cache. But, a more robust verision this object may be
+<p>This is a default (stopgap) caching object, provided to act as the cache. But, a more robust verision of this object may be
 provided via configuration with the understanding that the provided object will implement the same interface
 as the default object.</p></div>
         
@@ -59,6 +59,11 @@ as the default object.</p></div>
 
 <div class="description">
     <p>DefaultCacheTable.constructor</p>
+<p>Initializes global maps, one for files and one for directories.
+All files and directories are found by path (or hash of path) in these global maps.</p>
+<p>When directories are maintained, sub directories and files within the maintained directory
+will be accessed by the directory object. The file will be found in the file cache and the
+directories will be found in the directory cache.</p>
 </div>
 
 
@@ -100,7 +105,7 @@ as the default object.</p></div>
             <td class="type">
             
                 
-<span class="param-type">*</span>
+<span class="param-type">object</span>
 
 
             
@@ -216,6 +221,7 @@ as the default object.</p></div>
 
 <div class="description">
     <p>add_dir</p>
+<p>Includes a key for the path in the caching object and links the key to an empty object</p>
 </div>
 
 
@@ -308,7 +314,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line55">line 55</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -353,6 +359,7 @@ as the default object.</p></div>
 
 <div class="description">
     <p>add_file</p>
+<p>Adds a file as a new and empty object to caches and the containind directory.</p>
 </div>
 
 
@@ -445,7 +452,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line110">line 110</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line129">line 129</a>
     </li></ul></dd>
     
 
@@ -490,6 +497,8 @@ as the default object.</p></div>
 
 <div class="description">
     <p>add_file_to_dir</p>
+<p>Finds the dir cache object for the containing directory.
+Adds to the map of the containing directory</p>
 </div>
 
 
@@ -605,7 +614,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line98">line 98</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line115">line 115</a>
     </li></ul></dd>
     
 
@@ -650,6 +659,7 @@ as the default object.</p></div>
 
 <div class="description">
     <p>all_changed_files</p>
+<p>Extract the list of file objects that have been changed from the file cache.</p>
 </div>
 
 
@@ -693,7 +703,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line204">line 204</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line241">line 241</a>
     </li></ul></dd>
     
 
@@ -748,6 +758,9 @@ as the default object.</p></div>
 
 <div class="description">
     <p>clone_file</p>
+<p>With the understanding that a file contains some JavScript object that can be
+handles as JSON, this method obtains the data object from the file cache and
+stored a clone of the object under a new path, <code>path_2</code>.</p>
 </div>
 
 
@@ -863,7 +876,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line234">line 234</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line277">line 277</a>
     </li></ul></dd>
     
 
@@ -908,6 +921,8 @@ as the default object.</p></div>
 
 <div class="description">
     <p>contains</p>
+<p>check to see if the path is maintained anywhere as a file or a directory
+by checking the global file and directory caches</p>
 </div>
 
 
@@ -1000,7 +1015,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line141">line 141</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line165">line 165</a>
     </li></ul></dd>
     
 
@@ -1028,6 +1043,10 @@ as the default object.</p></div>
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>boolean</p>
+</div>
+
 
 
     
@@ -1051,6 +1070,8 @@ as the default object.</p></div>
 
 <div class="description">
     <p>contains_file</p>
+<p>returns false is not in the global file cache.
+for present files returns true or (if a file has a hash key) as string</p>
 </div>
 
 
@@ -1143,7 +1164,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line153">line 153</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line180">line 180</a>
     </li></ul></dd>
     
 
@@ -1171,6 +1192,10 @@ as the default object.</p></div>
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>string | boolean</p>
+</div>
+
 
 
     
@@ -1194,6 +1219,8 @@ as the default object.</p></div>
 
 <div class="description">
     <p>file_data</p>
+<p>Search file caches and possibly key maps for the file object.
+The reference to the file data will be in the &quot;data&quot; field of the object if found.</p>
 </div>
 
 
@@ -1268,7 +1295,7 @@ as the default object.</p></div>
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>(optional)</p></td>
         </tr>
 
     
@@ -1309,7 +1336,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line170">line 170</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line200">line 200</a>
     </li></ul></dd>
     
 
@@ -1337,6 +1364,10 @@ as the default object.</p></div>
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>buffer | string</p>
+</div>
+
 
 
     
@@ -1357,6 +1388,11 @@ as the default object.</p></div>
     
 
 
+
+<div class="description">
+    <p>init</p>
+<p>This method is included abstractly allowing for optional override in the descendants</p>
+</div>
 
 
 
@@ -1399,7 +1435,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line45">line 45</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line54">line 54</a>
     </li></ul></dd>
     
 
@@ -1444,6 +1480,7 @@ as the default object.</p></div>
 
 <div class="description">
     <p>mark_changed</p>
+<p>Aking to <code>touch</code>. The file will be marked as changed even if no other operation has been performed on it.</p>
 </div>
 
 
@@ -1559,7 +1596,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line221">line 221</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line260">line 260</a>
     </li></ul></dd>
     
 
@@ -1604,6 +1641,8 @@ as the default object.</p></div>
 
 <div class="description">
     <p>remove_dir</p>
+<p>removes the directory from the cache and removes
+any cache based sub directories as well.</p>
 </div>
 
 
@@ -1742,7 +1781,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line69">line 69</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line83">line 83</a>
     </li></ul></dd>
     
 
@@ -1787,6 +1826,7 @@ as the default object.</p></div>
 
 <div class="description">
     <p>remove_file</p>
+<p>Deletes file data from the global file cache</p>
 </div>
 
 
@@ -1879,7 +1919,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line129">line 129</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line150">line 150</a>
     </li></ul></dd>
     
 
@@ -1924,6 +1964,9 @@ as the default object.</p></div>
 
 <div class="description">
     <p>set_file_data</p>
+<p>When writing the file, the data will be captured in the file object
+and when read it will be pulled from the <code>data</code> field of the file object.</p>
+<p>When the data is set, the file is marked as changed.</p>
 </div>
 
 
@@ -2085,7 +2128,7 @@ as the default object.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line189">line 189</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line224">line 224</a>
     </li></ul></dd>
     
 
@@ -2137,7 +2180,7 @@ as the default object.</p></div>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Oct 20 2025 16:21:21 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Oct 22 2025 15:58:34 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

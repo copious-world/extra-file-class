@@ -20,9 +20,8 @@ Otherwise, this module provides several classes with methods that make some file
 
 ## affiliation
 
-This package is produced buy [copious.world](https://www.copious.world)
+This package is produced buy [copious.world ![copious.world logo](https://www.copious.world/copiousLogo.svg "copious.world")](https://www.copious.world)
 
-![copious.world logp0](https://www.copious.world/copiousLogo.svg "copious.world")
 
 ## install 
 

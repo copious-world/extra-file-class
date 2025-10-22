@@ -28,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/copious-world/extra-file-class/issues"
   },
-  "homepage": "https://github.com/copious-world/extra-file-class#readme"
+  "homepage": "https://github.com/copious-world/extra-file-class#readme",
+  "dependencies": {
+    "untildify": "^6.0.0"
+  }
 }

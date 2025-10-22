@@ -9,7 +9,8 @@ let PathManager = require('../lib/path_extension')
 async function test() {
     console.log("TEST : >> path_extension")
 
-    let conf = {"path_abreviations" : {
+    let conf = {
+        "path_abreviations" : {
             "[websites]" : "[alphas]/websites",
             "[alphas]" : "[github]/alphas",
             "[alpha-copious]" : "[github]/alphas/alpha-copious",
@@ -20,7 +21,12 @@ async function test() {
             "[uncle]" : "../../${uncle}",
             "[redef]" : "/home/buddies/",
             "[tricky]" : "[redef]/[aunt]/specials"
-        }}
+        },
+        "vars" : {
+            "${aunt}" : "tia maria",
+            "${uncle}" : "tio bolo"
+        }
+    }
 
     let pm = new PathManager(conf)
 

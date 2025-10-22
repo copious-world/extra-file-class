@@ -34,6 +34,14 @@ async function test() {
 
     console.dir(pm.path_abreviations())
 
+    pm.add_abbreviation("[bebub]","[github][tricky]/ticks/bebub")
+
+    console.dir(pm.path_abreviations())
+    
+    pm.set_var("${butter}","makes/fat")
+
+    console.log(pm.compile_one_path("[redef][tricky]/simple/things/${butter}"))
+
 }
 
 

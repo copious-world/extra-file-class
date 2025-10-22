@@ -26,6 +26,8 @@ async function test() {
 
     console.log(pm.default_realtive_asset_dir())
 
+    console.dir(pm.path_abreviations())
+
 }
 
 

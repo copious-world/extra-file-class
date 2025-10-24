@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node tests/index.js",
-    "gen-docs": "jsdoc --configure ./tools/jsdoc.conf --verbose"
+    "gen-docs": "jsdoc --configure ./tools/jsdoc.conf -a all -R README.md --verbose"
   },
   "repository": {
     "type": "git",
@@ -31,5 +31,9 @@
   "homepage": "https://github.com/copious-world/extra-file-class#readme",
   "dependencies": {
     "untildify": "^6.0.0"
+  },
+  "devDependencies": {
+    "docdash": "^2.0.2",
+    "jsdoc-to-markdown": "^9.1.3"
   }
 }

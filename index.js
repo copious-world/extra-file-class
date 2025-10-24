@@ -1,5 +1,13 @@
 //  extra-file-class
-// 
+//
+
+
+/**
+ * @namespace ExtraFileClass
+ * 
+ * 
+ */
+
 let FileOperations = require('./lib/file_ops')
 let FileOperationsCache = require('./lib/file_ops_cache')
 let DirectoryCache = require('./lib/directory_caches')

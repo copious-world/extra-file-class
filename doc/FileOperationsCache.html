@@ -1,23 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="utf-8">
-    <title>JSDoc: Class: FileOperationsCache</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
+    <title>FileOperationsCache - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div id="main">
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
 
-    <h1 class="page-title">Class: FileOperationsCache</h1>
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/copious-world/extra-file-class" target="_blank" class="menu-item" id="repository" >Github repo</a></h2><h3>Classes</h3><ul><li><a href="DefaultCacheTable.html">DefaultCacheTable</a><ul class='methods'><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#add_dir">add_dir</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#add_file">add_file</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#add_file_to_dir">add_file_to_dir</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#all_changed_files">all_changed_files</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#clone_file">clone_file</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#contains">contains</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#contains_file">contains_file</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#file_data">file_data</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#init">init</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#mark_changed">mark_changed</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#remove_dir">remove_dir</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#remove_file">remove_file</a></li><li data-type='method' style='display: none;'><a href="DefaultCacheTable.html#set_file_data">set_file_data</a></li></ul></li><li><a href="DirectoryCache.html">DirectoryCache</a><ul class='methods'><li data-type='method' style='display: none;'><a href="DirectoryCache.html#backup_to_directory">backup_to_directory</a></li><li data-type='method' style='display: none;'><a href="DirectoryCache.html#get_fos">get_fos</a></li><li data-type='method' style='display: none;'><a href="DirectoryCache.html#load_directory">load_directory</a></li><li data-type='method' style='display: none;'><a href="DirectoryCache.html#start">start</a></li><li data-type='method' style='display: none;'><a href="DirectoryCache.html#stop">stop</a></li></ul></li><li><a href="ExtraFileClass.FileOperations.html">ExtraFileClass.FileOperations</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#data_reader">data_reader</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#different_drive">different_drive</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#different_drive_sync">different_drive_sync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#dir_maker">dir_maker</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#dir_reader">dir_reader</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#dir_remover">dir_remover</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#ensure_directories">ensure_directories</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#ensured_file_copier">ensured_file_copier</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#ensured_file_mover">ensured_file_mover</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#exists">exists</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#file_copier">file_copier</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#file_mover">file_mover</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#file_remover">file_remover</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#json_data_reader">json_data_reader</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#load_data_at_path">load_data_at_path</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#load_json_data_at_path">load_json_data_at_path</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#output_append_string">output_append_string</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#output_json">output_json</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#output_string">output_string</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#watch">watch</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#write_append_string">write_append_string</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#write_out_json">write_out_json</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FileOperations.html#write_out_string">write_out_string</a></li></ul></li><li><a href="ExtraFileClass.FsExtra.html">ExtraFileClass.FsExtra</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#areIdentical">areIdentical</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#copy">copy</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#copySync">copySync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#createFile">createFile</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#createFileSync">createFileSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#createLink">createLink</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#createLinkSync">createLinkSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#createSymlink">createSymlink</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#createSymlinkSync">createSymlinkSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#emptyDir">emptyDir</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#emptyDirSync">emptyDirSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#ensureDirSync">ensureDirSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#getStats">getStats</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#getStatsSync">getStatsSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#isSrcSubdir">isSrcSubdir</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#makeDir">makeDir</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#makeDirSync">makeDirSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#mkdirpSync">mkdirpSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#mkdirs">mkdirs</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#move">move</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#moveSync">moveSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#outputFile">outputFile</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#outputFileSync">outputFileSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#outputJson">outputJson</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#outputJsonSync">outputJsonSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#pathExists">pathExists</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#readJson">readJson</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#readJsonSync">readJsonSync</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#remove">remove</a></li><li data-type='method' style='display: none;'><a href="ExtraFileClass.FsExtra.html#removeSync">removeSync</a></li></ul></li><li><a href="FileOperationsCache.html">FileOperationsCache</a><ul class='methods'><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#_file_entry_maker">_file_entry_maker</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#_file_remover_cache">_file_remover_cache</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#dir_maker">dir_maker</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#dir_remover">dir_remover</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#ensure_directories">ensure_directories</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#exists">exists</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#file_copier">file_copier</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#file_remover">file_remover</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#load_json_data_at_path">load_json_data_at_path</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#startup_sync">startup_sync</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#stop_sync">stop_sync</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#synch_files">synch_files</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#update_at_path">update_at_path</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#write_out_json">write_out_json</a></li><li data-type='method' style='display: none;'><a href="FileOperationsCache.html#write_out_string">write_out_string</a></li></ul></li><li><a href="PathManager.html">PathManager</a><ul class='methods'><li data-type='method' style='display: none;'><a href="PathManager.html#add_abbreviation">add_abbreviation</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#compile_one_path">compile_one_path</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#compile_paths">compile_paths</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#default_realtive_asset_dir">default_realtive_asset_dir</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#extract_abbreviations">extract_abbreviations</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#extract_delimited">extract_delimited</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#extract_vars">extract_vars</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#get_var">get_var</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#path_abreviations">path_abreviations</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#path_vars">path_vars</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#pop_dir">pop_dir</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#set_var">set_var</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#subst_vars">subst_vars</a></li><li data-type='method' style='display: none;'><a href="PathManager.html#translate_marker">translate_marker</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">FileOperationsCache</h1>
+    
 
     
 
@@ -28,9 +49,13 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>FileOperationsCache<span class="signature">(conf)</span><span class="type-signature"></span></h2>
+        <h2>
         
-            <div class="class-description"><p>class:  FileOperationsCache extends FileOperations</p>
+            FileOperationsCache
+        
+        </h2>
+        
+            <div class="class-description usertext"><p>class:  FileOperationsCache extends FileOperations</p>
 <p>provides a class with override capability that specializes methods in FileOperations to provide caching
 with possible reading/writing having to do with cache hits.</p>
 <p>Fields of Conf:</p>
@@ -43,25 +68,65 @@ with possible reading/writing having to do with cache hits.</p>
 </header>
 
 <article>
-    <div class="container-overview">
     
+        <div class="container-overview">
         
+            
 
     
     <h2>Constructor</h2>
     
 
-    
     <h4 class="name" id="FileOperationsCache"><span class="type-signature"></span>new FileOperationsCache<span class="signature">(conf)</span><span class="type-signature"></span></h4>
-    
 
     
 
 
 
-<div class="description">
-    <p>FileOperationsCache.constructor</p>
-</div>
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>FileOperationsCache.constructor</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line304">line 304</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
 
 
 
@@ -71,7 +136,11 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -105,6 +174,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">object</span>
 
 
+
             
             </td>
 
@@ -124,37 +194,89 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="_file_entry_maker"><span class="type-signature type-signature-async">(async) </span>_file_entry_maker<span class="signature">(path)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>_file_entry_maker</p>
+<p>-- create a directory --- create a matching cache path -- assume parent directory exists
+-- guards against THROW</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line305">line 305</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line400">line 400</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -176,61 +298,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_file_entry_maker"><span class="type-signature">(async) </span>_file_entry_maker<span class="signature">(path)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>_file_entry_maker</p>
-<p>-- create a directory --- create a matching cache path -- assume parent directory exists
--- guards against THROW</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -262,6 +330,7 @@ with possible reading/writing having to do with cache hits.</p>
             
                 
 <span class="param-type">string</span>
+
 
 
             
@@ -285,37 +354,68 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="_file_remover_cache"><span class="type-signature"></span>_file_remover_cache<span class="signature">(path)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>_file_remover_cache
+-- remove a file -- assume a valid path
+-- guards against THROW</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line401">line 401</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line411">line 411</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -337,41 +437,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_file_remover_cache"><span class="type-signature"></span>_file_remover_cache<span class="signature">(path)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>_file_remover_cache
--- remove a file -- assume a valid path
--- guards against THROW</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -403,6 +469,7 @@ with possible reading/writing having to do with cache hits.</p>
             
                 
 <span class="param-type">string</span>
+
 
 
             
@@ -426,37 +493,67 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="dir_maker"><span class="type-signature type-signature-async">(async) </span>dir_maker<span class="signature">(path)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>dir_maker</p>
+<p>-- create a directory --- create a matching cache path -- assume parent directory exists</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line412">line 412</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line350">line 350</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -478,40 +575,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="dir_maker"><span class="type-signature">(async) </span>dir_maker<span class="signature">(path)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>dir_maker</p>
-<p>-- create a directory --- create a matching cache path -- assume parent directory exists</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -545,6 +609,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -566,37 +631,78 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>boolean</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="dir_remover"><span class="type-signature type-signature-async">(async) </span>dir_remover<span class="signature">(upath, recursive, force)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>dir_remover
+-- remove a directory -- assume parent directory exists
+-- guards against THROW</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line351">line 351</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line367">line 367</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -618,51 +724,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>boolean</p>
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="dir_remover"><span class="type-signature">(async) </span>dir_remover<span class="signature">(upath, recursive, force)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>dir_remover
--- remove a directory -- assume parent directory exists
--- guards against THROW</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -696,6 +758,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -719,6 +782,7 @@ with possible reading/writing having to do with cache hits.</p>
             
                 
 <span class="param-type">boolean</span>
+
 
 
             
@@ -746,6 +810,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">boolean</span>
 
 
+
             
             </td>
 
@@ -767,37 +832,78 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>boolean</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="ensure_directories"><span class="type-signature type-signature-async">(async) </span>ensure_directories<span class="signature">(path, top_dir, is_file_path)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>ensure_directories</p>
+<p>-- attempts to construct or verify all directories along the path up to an optional file
+-- guards against THROW</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line368">line 368</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line384">line 384</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -819,51 +925,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>boolean</p>
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="ensure_directories"><span class="type-signature">(async) </span>ensure_directories<span class="signature">(path, top_dir, is_file_path)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>ensure_directories</p>
-<p>-- attempts to construct or verify all directories along the path up to an optional file
--- guards against THROW</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -895,6 +957,7 @@ with possible reading/writing having to do with cache hits.</p>
             
                 
 <span class="param-type">string</span>
+
 
 
             
@@ -922,6 +985,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -947,6 +1011,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">boolean</span>
 
 
+
             
             </td>
 
@@ -968,37 +1033,79 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>string | boolean</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="exists"><span class="type-signature type-signature-async">(async) </span>exists<span class="signature">(path, app_flags)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>exists</p>
+<p>returns true if the file being checked is both and disk and in the cache.</p>
+<p>-- wraps the access method -- assumes the path is a valid path
+-- guards against THROW</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line385">line 385</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line462">line 462</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1020,52 +1127,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>string | boolean</p>
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="exists"><span class="type-signature">(async) </span>exists<span class="signature">(path, app_flags)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>exists</p>
-<p>returns true if the file being checked is both and disk and in the cache.</p>
-<p>-- wraps the access method -- assumes the path is a valid path
--- guards against THROW</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1099,6 +1161,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -1124,6 +1187,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">number</span>
 
 
+
             
             </td>
 
@@ -1143,37 +1207,78 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>boolean</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="file_copier"><span class="type-signature type-signature-async">(async) </span>file_copier<span class="signature">(path_1, path_2)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>file_copier</p>
+<p>-- copy a file from path_1 to path_2 -- assume valid paths
+-- guards against THROW</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line463">line 463</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line437">line 437</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1195,51 +1300,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>boolean</p>
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="file_copier"><span class="type-signature">(async) </span>file_copier<span class="signature">(path_1, path_2)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>file_copier</p>
-<p>-- copy a file from path_1 to path_2 -- assume valid paths
--- guards against THROW</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1273,6 +1334,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -1298,6 +1360,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -1319,37 +1382,76 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>boolean</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="file_remover"><span class="type-signature type-signature-async">(async) </span>file_remover<span class="signature">(path)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>file_remover</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line438">line 438</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line421">line 421</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1371,49 +1473,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>boolean</p>
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="file_remover"><span class="type-signature">(async) </span>file_remover<span class="signature">(path)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>file_remover</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1445,6 +1505,7 @@ with possible reading/writing having to do with cache hits.</p>
             
                 
 <span class="param-type">string</span>
+
 
 
             
@@ -1466,37 +1527,78 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>boolean</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="load_json_data_at_path"><span class="type-signature type-signature-async">(async) </span>load_json_data_at_path<span class="signature">(path)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>load_json_data_at_path</p>
+<p>-- read a JSON formatted file from disk
+-- guards against THROW</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line422">line 422</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line542">line 542</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1518,51 +1620,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>boolean</p>
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="load_json_data_at_path"><span class="type-signature">(async) </span>load_json_data_at_path<span class="signature">(path)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>load_json_data_at_path</p>
-<p>-- read a JSON formatted file from disk
--- guards against THROW</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1594,6 +1652,7 @@ with possible reading/writing having to do with cache hits.</p>
             
                 
 <span class="param-type">string</span>
+
 
 
             
@@ -1617,37 +1676,76 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>string | buffer | boolean</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="startup_sync"><span class="type-signature type-signature-async">(async) </span>startup_sync<span class="signature">(delta_time)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>startup_sync</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line543">line 543</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line619">line 619</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1669,49 +1767,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>string | buffer | boolean</p>
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="startup_sync"><span class="type-signature">(async) </span>startup_sync<span class="signature">(delta_time)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>startup_sync</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -1745,6 +1801,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">timestamp</span>
 
 
+
             
             </td>
 
@@ -1764,37 +1821,66 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="stop_sync"><span class="type-signature type-signature-async">(async) </span>stop_sync<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>stop_sync</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line620">line 620</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line632">line 632</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1823,66 +1909,64 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
         
             
 
     
 
-    
-    <h4 class="name" id="stop_sync"><span class="type-signature">(async) </span>stop_sync<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+    <h4 class="name" id="synch_files"><span class="type-signature type-signature-async">(async) </span>synch_files<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
-
-
-
-<div class="description">
-    <p>stop_sync</p>
-</div>
-
-
-
-
-
-
-
-
-
 
 
 
 
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>synch_files</p>
+<p>-- if a sync interval is set, then this will write out all files previously established by writing data.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line633">line 633</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line599">line 599</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1911,85 +1995,6 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-        
-            
-
-    
-
-    
-    <h4 class="name" id="synch_files"><span class="type-signature">(async) </span>synch_files<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>synch_files</p>
-<p>-- if a sync interval is set, then this will write out all files previously established by writing data.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line600">line 600</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2005,19 +2010,58 @@ with possible reading/writing having to do with cache hits.</p>
 
     
 
-    
     <h4 class="name" id="update_at_path"><span class="type-signature"></span>update_at_path<span class="signature">(path)</span><span class="type-signature"></span></h4>
-    
 
     
 
 
 
-<div class="description">
-    <p>update_at_path</p>
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>update_at_path</p>
 <p>-- mark a file CacheTable as changed.
--- guards against THROW</p>
-</div>
+-- guards against THROW</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line576">line 576</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
 
 
 
@@ -2027,7 +2071,11 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-    <h5>Parameters:</h5>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -2059,6 +2107,7 @@ with possible reading/writing having to do with cache hits.</p>
             
                 
 <span class="param-type">string</span>
+
 
 
             
@@ -2082,37 +2131,78 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>boolean</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="write_out_json"><span class="type-signature type-signature-async">(async) </span>write_out_json<span class="signature">(path, obj, ce_flags)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>write_out_json</p>
+<p>-- write string to file -- assume a valid path
+-- guards against THROW</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line577">line 577</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line514">line 514</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -2134,51 +2224,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>boolean</p>
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="write_out_json"><span class="type-signature">(async) </span>write_out_json<span class="signature">(path, obj, ce_flags)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>write_out_json</p>
-<p>-- write string to file -- assume a valid path
--- guards against THROW</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -2210,6 +2256,7 @@ with possible reading/writing having to do with cache hits.</p>
             
                 
 <span class="param-type">string</span>
+
 
 
             
@@ -2237,6 +2284,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">object</span>
 
 
+
             
             </td>
 
@@ -2262,6 +2310,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">number</span>
 
 
+
             
             </td>
 
@@ -2283,37 +2332,78 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>boolean -- false on failing either stringify or writing</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="write_out_string"><span class="type-signature type-signature-async">(async) </span>write_out_string<span class="signature">(path, str, ce_flags)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>write_out_string</p>
+<p>-- write string to file -- assume a valid path
+-- guards against THROW</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line515">line 515</a>
+        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line483">line 483</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -2335,51 +2425,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>boolean -- false on failing either stringify or writing</p>
-</div>
-
-
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="write_out_string"><span class="type-signature">(async) </span>write_out_string<span class="signature">(path, str, ce_flags)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>write_out_string</p>
-<p>-- write string to file -- assume a valid path
--- guards against THROW</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -2413,6 +2459,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">string</span>
 
 
+
             
             </td>
 
@@ -2436,6 +2483,7 @@ with possible reading/writing having to do with cache hits.</p>
             
                 
 <span class="param-type">string</span>
+
 
 
             
@@ -2463,6 +2511,7 @@ with possible reading/writing having to do with cache hits.</p>
 <span class="param-type">number</span>
 
 
+
             
             </td>
 
@@ -2484,45 +2533,6 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_ops_cache.js.html">file_ops_cache.js</a>, <a href="file_ops_cache.js.html#line484">line 484</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
 
 
 
@@ -2533,12 +2543,7 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
-
-
-
-
-
-<h5>Returns:</h5>
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -2548,8 +2553,6 @@ with possible reading/writing having to do with cache hits.</p>
 
 
     
-
-
 
 
 
@@ -2566,19 +2569,25 @@ with possible reading/writing having to do with cache hits.</p>
 
 
 
+    
+    
 </div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DefaultCacheTable.html">DefaultCacheTable</a></li><li><a href="DirectoryCache.html">DirectoryCache</a></li><li><a href="FileOperations.html">FileOperations</a></li><li><a href="FileOperationsCache.html">FileOperationsCache</a></li><li><a href="FsExtra.html">FsExtra</a></li><li><a href="PathManager.html">PathManager</a></li></ul>
-</nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Oct 22 2025 15:58:34 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Thu Oct 23 2025 18:28:29 GMT-0700 (Pacific Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
 </body>
 </html>

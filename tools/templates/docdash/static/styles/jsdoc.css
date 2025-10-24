@@ -8,7 +8,7 @@ html, body {
 }
 
 body {
-  color: #242426ff;
+  color: #4d4e53;
   background-color: white;
   margin: 0 auto;
   padding: 0 20px;
@@ -22,7 +22,7 @@ img {
 
 a,
 a:active {
-  color: #606;
+  color: rgba(39, 85, 26, 1);
   text-decoration: none;
 }
 
@@ -83,25 +83,26 @@ h3 {
 h4 {
   font-size: 18px;
   margin: 1em 0 .2em;
-  color: #4d4e53;
+  color: #2f2f31ff;
 }
 
 h4.name {
   color: #fff;
-  background: #6d426d;
+  background: #311f15ff;
   box-shadow: 0 .25em .5em #d3d3d3;
   border-top: 1px solid #d3d3d3;
   border-bottom: 1px solid #d3d3d3;
   margin: 1.5em 0 0.5em;
   padding: .75em 0 .75em 10px;
+  font-weight: 600;
 }
 
 h4.name a {
-  color: #fc83ff;
+  color: #423a1eff;
 }
 
 h4.name a:hover {
-  border-bottom-color: #fc83ff;
+  border-bottom-color: #1f421eff;
 }
 
 h5, .container-overview .subsection-title {
@@ -164,7 +165,7 @@ h6 {
 
 tt, code, kbd, samp, pre {
   font-family: Consolas, Monaco, 'Andale Mono', monospace;
-  background: #f4f4f4;
+  background: #fafaebff;
 }
 
 tt, code, kbd, samp{
@@ -273,7 +274,9 @@ nav ul a:active {
 
 nav a:hover,
 nav a:active {
-  color: #606;
+  color: rgba(102, 11, 11, 1);
+  font-weight: 500;
+  text-decoration: underline solid;
 }
 
 nav > ul {
@@ -281,13 +284,13 @@ nav > ul {
 }
 
 nav > ul > li > a {
-  color: #606;
+  color: rgba(28, 56, 11, 1);
   margin-top: 10px;
 }
 
 nav ul ul a {
-  color: hsl(207, 1%, 60%);
-  border-left: 1px solid hsl(207, 10%, 86%);
+  color: hsla(115, 69%, 20%, 1.00);
+  border-left: 1px solid hsla(240, 1%, 76%, 1.00);
 }
 
 nav ul ul a,
@@ -302,8 +305,9 @@ nav h2 {
 }
 
 nav > h2 > a {
-   margin: 10px 0 -10px;
-   color: #606 !important;
+  margin: 10px 0 -10px;
+  color: #283827ff;
+  font-weight: bold;
 }
 
 footer {
@@ -329,7 +333,7 @@ footer {
 
 .important {
   font-weight: bold;
-  color: #950B02;
+  color: #3f0a06ff;
 }
 
 .yes-def {
@@ -337,7 +341,7 @@ footer {
 }
 
 .type-signature {
-  color: #CA79CA
+  color: #ebf0a5ff
 }
 
 .type-signature:last-child {
@@ -349,7 +353,7 @@ footer {
 }
 
 .signature {
-    color: #fc83ff;
+    color: #ebf0a5ff;
 }
 
 .details {
@@ -407,14 +411,14 @@ footer {
   width: inherit;
   line-height: 18px;
   display: block;
-  background-color: #0d152a;
+  background-color: #060a13ff;
   color: #aeaeae;
 }
 
 .prettyprint code {
   line-height: 18px;
   display: block;
-  background-color: #0d152a;
+  background-color: #060a13ff;
   color: #4D4E53;
 }
 
@@ -501,7 +505,7 @@ thead tr, thead tr {
 }
 
 .params td, .params .name, .props .name, .name code {
-   color: #4D4E53;
+   color: #12121fff;
    font-family: Consolas, Monaco, 'Andale Mono', monospace;
    font-size: 100%;
 }
@@ -521,7 +525,7 @@ thead tr, thead tr {
 }
 
 span.param-type, .params td .param-type, .param-type dd {
-   color: #606;
+  color: rgba(10, 43, 10, 1);
   font-family: Consolas, Monaco, 'Andale Mono', monospace
 }
 

@@ -18,12 +18,17 @@ Otherwise, this module provides several classes with methods that make some file
 
 > Also, since 0.9.18, fs and fs/promsises are accessible via this class. [(See below)](#access-fs)
 
+
 ## affiliation
 
-This package is produced buy [copious.world ![copious.world logo](https://www.copious.world/copiousLogo.svg "copious.world")](https://www.copious.world)
+
+This package is produced buy [copious.world ![copious.world logo](https://www.copious.world/copiousLogo.svg "copious.world")](https://www.copious.world)<span style="font-weight:bold;">&#x2190;</span>
+
+[<span style="font-weight:bold;">&#8594;</span> find his package on npm](https://www.npmjs.com/package/extra-file-class)
 
 
-## install 
+## install
+
 
 ```
 npm install --save extra-file-class
@@ -31,7 +36,9 @@ npm install --save extra-file-class
 
 ## usage
 
+
 This module has been used in other modules that can be found under [copious-world](https::/github.com/copious-world) on github. 
+
 
 ### importing/requiring
 
@@ -82,6 +89,7 @@ cons path = new PathManager(config)
 
 
 ## working with the classes
+
 
 
 An application can use either of the two classes foe file operations. A third class is available for transfering objects to and from files in particular directories.
@@ -229,8 +237,6 @@ let dir_fos = new DirectoryCache({
 **PathManager**
 
 
-
-
 <a name="access-fs" > </a>
 ### @= accessing node:fs and node:fs/promises
 
@@ -313,7 +319,7 @@ create a directory -- assume parent directory exists -- guards against THROW
 * path -- a path to the directory to be created
 * options -- an object options object, for fsPromises.mkdir
 
-----
+
 
 #### **`dir_remover`**
 remove a directory -- assume parent directory exists --guards against THROW
@@ -324,7 +330,7 @@ remove a directory -- assume parent directory exists --guards against THROW
 * recursive -- from fsPromises 'rm' -- will remove subdirectories if true
 * force     -- from fsPromises 'rm' -- will remove directories and override stoppage conditions if true
 
-----
+
 
 #### **`file_remover`**
 
@@ -334,7 +340,7 @@ remove a file -- assume a valid path -- guards against THROW
 
 * path -- a path to the file to be removed
 
-----
+
 
 #### **`write_out_string`**
 write string to file -- assume a valid path
@@ -346,7 +352,7 @@ write string to file -- assume a valid path
 * str -- a string to be written
 * ce\_flags  -- options -- refer to the flags for node.js writeFile 
 
-----
+
 
 
 #### **`write_append_string`**
@@ -358,17 +364,17 @@ append string to the end of a file -- assume a valid path -- guards against THRO
 * str -- a string to be written
 * ce\_flags  -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
 
-----
+
 
 
 #### **`data_reader`**
-read a file from disk --- any format  -- will THROW
+read a file from disk  any format  -- will THROW
 
 **parameters**
 
 * path -- a path to the file that contains the string to be read
 
-----
+
 
 
 #### **`json_data_reader`**
@@ -378,7 +384,7 @@ read a JSON formatted file from disk -- will THROW
 
 * path -- a path to the file that contains the string to be read
 
-----
+
 
 
 #### **`file_copier`**
@@ -389,7 +395,7 @@ copy a file from path\_1 to path\_2 -- assume valid paths -- guards against THRO
 * path\_1 -- source path
 * path\_2 -- destination path
 
-----
+
 
 #### **`ensured_file_copier`**
 move a file from path\_1 to path\_2 -- assume valid paths for the source -- guards against THROW
@@ -413,7 +419,7 @@ move a file from path\_1 to path\_2 -- assume valid paths -- guards against THRO
 * path\_1 -- source path
 * path\_2 -- destination path
 
-----
+
 
 #### **`ensured_file_mover `**
 move a file from path\_1 to path\_2 -- assume valid paths for the source -- guards against THROW
@@ -425,7 +431,7 @@ move a file from path\_1 to path\_2 -- assume valid paths for the source -- guar
 * path\_1 -- source path
 * path\_2 -- destination path
 
-----
+
 
 
 #### **`ensure_directories`**
@@ -438,7 +444,7 @@ attempts to construct or verify all directories along the path -- guards against
 * is\_file\_path -- if true, this will call the callback on the basename.
 * app\_cb(parent\_path,file\_path) -- a callback that can be used to place the file_path into the final parent directory in a cache table or for other application reasons.
 
-----
+
 
 
 #### **`exists`**
@@ -448,7 +454,7 @@ wraps the access method -- assumes the path is a valid path  -- guards against T
 
 * path --  a path to the file under test
 
-----
+
 
 
 #### **`write_out_json`**
@@ -460,17 +466,17 @@ write string to file -- assume a valid path -- guards against THROW
 * obj -- a JSON stringifiable object
 * ce\_flags  -- options -- refer to the flags for node.js writeFile 
 
-----
+
 
 
 #### **`load_data_at_path`**
-read a file from disk --- any format -- guards against THROW
+read a file from disk  any format -- guards against THROW
 
 **parameters**
 
 * path -- a path to the file that contains the string to be read
 
-----
+
 
 
 
@@ -481,7 +487,7 @@ read a JSON formatted file from disk -- guards against THROW
 
 * path -- a path to the file that contains the string to be read
 
-----
+
     
 
 #### **`output_string`**
@@ -494,7 +500,7 @@ write string to file -- ensures path -- guards against THROW
 * ce\_flags  -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
 * top\_dir -- **optional** -- top level directy path under which 
 
-----
+
 
 
 #### **`output_append_string`**
@@ -507,7 +513,7 @@ append string to the end of a file -- assume a valid path -- guards against THRO
 * ce\_flags  -- **optional** -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
 * top\_dir -- optional as starting point for the directory
 
-----
+
 
 
 #### **`output_json`**
@@ -531,7 +537,7 @@ create a directory -- adds a directory to the cache table, then calls FileOperat
 
 * path -- a path to the directory to be created
 
-----
+
 
 
 #### **`dir_remover`**
@@ -543,7 +549,7 @@ remove a directory -- removes the directory from the cache table, then calls the
 * recursive -- from fsPromises 'rm' -- will remove subdirectories if true
 * force     -- from fsPromises 'rm' -- will remove directories and override stoppage conditions if true
 
-----
+
 
 
 #### **`ensure_directories`**
@@ -555,7 +561,7 @@ calls the FileOperations`ensure_directories` with callback provided that the las
 * top\_dir -- **optional** -- top level directy path under which 
 * is\_file\_path -- tells the method if a path to a file or directory is being passed. True if it is a file. Does not expect the method to figure this out
 
-----
+
 
 
 #### **`file_remover`**
@@ -566,7 +572,7 @@ remove a file -- first removes the file from the cache table, then calls FileOpe
 
 * path -- a path to the file to be removed
 
-----
+
 
 
 #### **`file_copier`**
@@ -577,7 +583,7 @@ Clones a copy of the data in the hash table under the new path. Then, calls File
 * path\_1 -- source path
 * path\_2 -- destination path
 
-----
+
 
 
 #### **`exists`**
@@ -587,7 +593,7 @@ Check both the actual disk and the cache table. Returns true if it exists in bot
 
 * path --  a path to the file under test
 
-----
+
 
 
 #### **`write_out_string`**
@@ -599,7 +605,7 @@ makes sure that the cache table entry for the file has its data set to the strin
 * str -- a string to be written
 * ce\_flags  -- options -- refer to the flags for node.js writeFile 
 
-----
+
 
 
 #### **`write_out_json`**
@@ -611,7 +617,7 @@ makes sure that the cache table entry for the file has its data set to the obj b
 * obj -- a JSON stringifiable object
 * ce\_flags  -- options -- refer to the flags for node.js writeFile 
 
-----
+
 
 
 #### **`load_json_data_at_path`**
@@ -621,7 +627,7 @@ If the file data is in cache, the data stored there will be returned. OTherwise,
 
 * path -- a path to the file that contains the string to be read
        
-----
+
 
 
 #### **`update_json_at_path`**
@@ -632,7 +638,7 @@ Mark a file CacheTable as changed. This method allows for calling this independe
 
 * path -- a path to the file that contains the string to be read
 
-----
+
 
 
 #### **`startup_sync(delta_time)`**
@@ -669,7 +675,7 @@ The class is assumed to do no operations on disk. Although, some implementations
  
 The initializer for FileOperationsCache will await this method and must be provided even if empty.
 
-----
+
 
 #### **`add_dir`**
 
@@ -679,7 +685,7 @@ Adds an empty object to a map `<directory path,objec>`. The object will contain 
 
 * path -- a path to the directory -- becomes the default key in the table.
 
-----
+
 
 #### **`remove_dir`**
 
@@ -691,7 +697,7 @@ Remove the directory structure from the cache table. If it is not forced, the pr
 * recursive -- removes subdirectories
 * force  -- removes files 
 
-----
+
 
 
 #### **`add_file_to_dir`**
@@ -703,7 +709,7 @@ Add a file to the object mapped to by the directory path given. This should be t
 * parent\_path -- should be the parent path of the file.
 * file -- the full path of the file. This path is used for synching data.
 
-----
+
 
 
 #### **`add_file`**
@@ -729,7 +735,7 @@ This form is considered empty. And, more should be done to populate the field va
 
 * path -- a path to the file as it occurs on disk.
 
-----
+
 
 
 #### **`contains`**
@@ -740,7 +746,7 @@ Returns true if the provided path is either a directory or a file stored in the 
 
 * path -- a path to the file as it occurs on disk.
 
-----
+
 
 
 #### **`contains_file`**
@@ -751,7 +757,7 @@ Returns true or a key if the file is in the file table. Returns a key if keys ar
 
 * path -- a path to the file as it occurs on disk.
 
-----
+
 
 
 #### **`file_data`**
@@ -763,7 +769,7 @@ Returns the data field of a file table entry.
 * path -- a path to the file as it occurs on disk.
 * fkey -- can only be used if the class is configured to use keys
 
-----
+
 
 
 #### **`set_file_data`**
@@ -788,7 +794,7 @@ The file must have been placed in cache. Sets new data. Marks the object as chan
 * obj -- an object to be stored - may be a string.
 * is\_structured -- indicates the object is an object and not a string if true.
 
-----
+
 
 #### **`all_changed_files`**
 
@@ -796,7 +802,7 @@ Returns all changed files as a list of file objects (see `add_file`). Called by 
 
 **no parameters**
 
-----
+
 
 
 #### **`mark_changed`**
@@ -808,7 +814,7 @@ If a file is stored, indicates that it has been changed and should be written as
 * path -- a path to the file as it occurs on disk.
 * bval -- a boolean value. **true** to add it to the sync list, **false** to remove it.
 
-----
+
 
 
 #### **`clone_file`**
@@ -856,7 +862,7 @@ Locates a directory and then loads all of its files, expecting them to contain J
 * base\_dir -- (optional) -- if specified, this is the top level directory instead of the configured one.
 * after_action -- (optional) -- a function to call after loading.
 
-----
+
 
 #### **backup\_to\_directory**
 
@@ -869,20 +875,20 @@ Write a list of objects to files, named by the file namer function, configured. 
 * list -- (optional) -- an iterable of objects to write to files. If not specified, this method attempts to use the configured iterable.
 * ce\_flags -- (optional) -- the flags to be passed to `write_json_string`
 
-----
+
 
 #### **get\_fos**
 
 Return the reference to the file operations object that this DirectoryCache object is using.
 
-----
+
 
 
 #### **stop**
 
 Turn off the backup interval. 
 
-----
+
 
 #### **start**
 
@@ -893,4 +899,4 @@ Turn on the backup interval with delta time passed to it.
 * b\_interval --  The delta time between calls to **backup\_to\_directory**
 
 
-----
+

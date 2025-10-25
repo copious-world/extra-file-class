@@ -324,6 +324,8 @@ function attachModuleSymbols(doclets, modules) {
 
 function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
     var nav = '';
+    
+    let classes_boxed = false;
 
     if (items && items.length) {
         var itemsNav = '';
@@ -404,11 +406,21 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
         });
 
         if (itemsNav !== '') {
-            if(docdash.collapse === "top") {
-                nav += '<h3 class="collapsed_header">' + itemHeading + '</h3><ul class="collapse_top">' + itemsNav + '</ul>';
-            }
-            else {
-                nav += '<h3>' + itemHeading + '</h3><ul>' + itemsNav + '</ul>';
+            if( docdash.collapse === "top" ) {
+            nav += `<h3 class="collapsed_header">${itemHeading}</h3>
+                    <ul class="collapse_top menu-contained-nav">
+                    ${itemsNav}
+                    </ul>`
+            } else {
+                if ( itemHeading === "Classes" ) {
+                    nav += `<h3>${itemHeading}</h3>
+                        <ul id="classes-ul-overflow" class="menu-contained-nav" >${itemsNav}</ul>
+                    `
+                } else {
+                    nav += `<h3>${itemHeading}</h3>
+                        <ul>${itemsNav}</ul>
+                    `
+                }
             }
         }
     }

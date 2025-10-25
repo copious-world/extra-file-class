@@ -37,3 +37,31 @@ function hideAllButCurrent(){
 }
 
 hideAllButCurrent();
+
+
+
+
+
+function classes_height() {
+
+    let classes_box = document.getElementById("classes-ul-overflow")
+
+    if ( classes_box ) {
+        let c_rect = classes_box.getBoundingClientRect()
+
+        let top = c_rect.top
+        let doc_h = window.innerHeight
+        let h = doc_h - top - 50;
+
+        classes_box.style.height = `${h}px`
+        classes_box.style.maxHeight = `${h}px`
+    }
+
+}
+
+
+classes_height()
+
+window.onresize = (ev) => {
+    classes_height()
+}

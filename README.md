@@ -12,9 +12,9 @@ Otherwise, this module provides several classes with methods that make some file
 * **PathManager** -- A drop-in replacement for node.js path module with path syntax extensions and path mapping.
 
 > Version 1.0.0 adds support for web page files as well. These modules are accessible via roll-up. [(See below)](#web-fs)
-> 
+>
 > Aliases for methods named as in `fs-extra` are provided for asynchronous cases.
-> 
+>
 
 > Also, since 0.9.18, fs and fs/promsises are accessible via this class. [(See below)](#access-fs)
 
@@ -24,10 +24,10 @@ Otherwise, this module provides several classes with methods that make some file
 
 This package is produced buy [copious.world ![copious.world logo](https://www.copious.world/copiousLogo.svg "copious.world")](https://www.copious.world)<span style="font-weight:bold;">&#x2190;</span>
 
-[<span style="font-weight:bold;">&#8594;</span> find his package on npm](https://www.npmjs.com/package/extra-file-class)
+  <a href="https://www.npmjs.com/package/extra-file-class" target="_blank" ><span style="font-weight:bold;">&#8594;</span> find his package on npm</a>
 
 
-## install
+## install"
 
 
 ```
@@ -37,7 +37,7 @@ npm install --save extra-file-class
 ## usage
 
 
-This module has been used in other modules that can be found under [copious-world](https::/github.com/copious-world) on github. 
+This module has been used in other modules that can be found under [copious-world](https::/github.com/copious-world) on github.
 
 
 ### importing/requiring
@@ -114,7 +114,7 @@ async function useit() {
 
 ```
 
-The conf, configuration object, does not have to be there. But, it may contain a method or a path to a method that handles EMFILE events. 
+The conf, configuration object, does not have to be there. But, it may contain a method or a path to a method that handles EMFILE events.
 
 Other events are suppressed, but, they are reported. Events such as EEXIST will be ignored if the method is attempting to create a directory. Usually the aim of creating a directory is to make sure that it is there and it is OK if it is there. Applications can use ***exists*** if there is a need to wipe a directory before creating it.
 
@@ -131,7 +131,7 @@ Or, it may be a class instance with a **defer** method:
 
 ```
 let conf = {
-	"EMFILE_handler" : { defer : (callback) => {} } 
+	"EMFILE_handler" : { defer : (callback) => {} }
 }
 ```
 
@@ -213,7 +213,7 @@ let dir_fos = new DirectoryCache({
         "use_caching" : false,		// if true, then use FileOpsCache
         "backup_interval" : (conf && conf.backup_interval) ? conf.backup_interval : false
     })
-    
+
  async directory_ops() {
  	//
  	let item_injector = (obj) => { my_iterable.add(obj)  } // or push
@@ -227,10 +227,10 @@ let dir_fos = new DirectoryCache({
  	// then
  	await dir_fos.backup_to_directory()   // use configured values
  }
- 
- 
+
+
  directory_ops()
-    
+
 
 ```
 
@@ -313,7 +313,7 @@ The methods, overriden, will be called by methods listed above. For example, **o
 #### **`dir_maker`**
 
 create a directory -- assume parent directory exists -- guards against THROW
-		
+
 **parameters**
 
 * path -- a path to the directory to be created
@@ -350,7 +350,7 @@ write string to file -- assume a valid path
 
 * path -- a path to the file that will contain the string
 * str -- a string to be written
-* ce\_flags  -- options -- refer to the flags for node.js writeFile 
+* ce\_flags  -- options -- refer to the flags for node.js writeFile
 
 
 
@@ -440,7 +440,7 @@ attempts to construct or verify all directories along the path -- guards against
 **parameters**
 
 * path -- a path to be construted or verified
-* top\_dir -- **optional** -- top level directy path under which 
+* top\_dir -- **optional** -- top level directy path under which
 * is\_file\_path -- if true, this will call the callback on the basename.
 * app\_cb(parent\_path,file\_path) -- a callback that can be used to place the file_path into the final parent directory in a cache table or for other application reasons.
 
@@ -464,7 +464,7 @@ write string to file -- assume a valid path -- guards against THROW
 
 * path -- a path to the file that will contain the string in JSON format
 * obj -- a JSON stringifiable object
-* ce\_flags  -- options -- refer to the flags for node.js writeFile 
+* ce\_flags  -- options -- refer to the flags for node.js writeFile
 
 
 
@@ -488,7 +488,7 @@ read a JSON formatted file from disk -- guards against THROW
 * path -- a path to the file that contains the string to be read
 
 
-    
+
 
 #### **`output_string`**
 write string to file -- ensures path -- guards against THROW
@@ -498,7 +498,7 @@ write string to file -- ensures path -- guards against THROW
 * path -- a path to the file that will contain the string
 * str -- a string to be written
 * ce\_flags  -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
-* top\_dir -- **optional** -- top level directy path under which 
+* top\_dir -- **optional** -- top level directy path under which
 
 
 
@@ -532,7 +532,7 @@ write string to file -- assume a valid path -- guards against THROW
 #### **`dir_maker`**
 
 create a directory -- adds a directory to the cache table, then calls FileOperations`dir_maker`.
-		
+
 **parameters**
 
 * path -- a path to the directory to be created
@@ -558,7 +558,7 @@ calls the FileOperations`ensure_directories` with callback provided that the las
 **parameters**
 
 * path -- a path to be construted or verified
-* top\_dir -- **optional** -- top level directy path under which 
+* top\_dir -- **optional** -- top level directy path under which
 * is\_file\_path -- tells the method if a path to a file or directory is being passed. True if it is a file. Does not expect the method to figure this out
 
 
@@ -603,7 +603,7 @@ makes sure that the cache table entry for the file has its data set to the strin
 
 * path -- a path to the file that will contain the string
 * str -- a string to be written
-* ce\_flags  -- options -- refer to the flags for node.js writeFile 
+* ce\_flags  -- options -- refer to the flags for node.js writeFile
 
 
 
@@ -615,7 +615,7 @@ makes sure that the cache table entry for the file has its data set to the obj b
 
 * path -- a path to the file that will contain the string in JSON format
 * obj -- a JSON stringifiable object
-* ce\_flags  -- options -- refer to the flags for node.js writeFile 
+* ce\_flags  -- options -- refer to the flags for node.js writeFile
 
 
 
@@ -626,7 +626,7 @@ If the file data is in cache, the data stored there will be returned. OTherwise,
 **parameters**
 
 * path -- a path to the file that contains the string to be read
-       
+
 
 
 
@@ -643,13 +643,13 @@ Mark a file CacheTable as changed. This method allows for calling this independe
 
 #### **`startup_sync(delta_time)`**
 
-This starts the synching interval to fire at the `delta_time`. This method is called during construction, using the configuration. It may be called by the application however. 
+This starts the synching interval to fire at the `delta_time`. This method is called during construction, using the configuration. It may be called by the application however.
 
 #### **`stop_sync()`**
 
-Turns off the synching interval. 
+Turns off the synching interval.
 
- 
+
 ## A CacheTable interface
 
 The FileOperationsCache class operates with a cache table class of a known interface. Here is the list of methods that CacheTable classes will need to implement in order to replace the default cache table.
@@ -672,7 +672,7 @@ The **constructor** takes a configuration object. This is not used in the defaul
 The class is assumed to do no operations on disk. Although, some implementations may choose to.
 
 #### **`init`**
- 
+
 The initializer for FileOperationsCache will await this method and must be provided even if empty.
 
 
@@ -689,13 +689,13 @@ Adds an empty object to a map `<directory path,objec>`. The object will contain 
 
 #### **`remove_dir`**
 
-Remove the directory structure from the cache table. If it is not forced, the presence of file will preclude the completion of the task. Works recursively if asked. 
+Remove the directory structure from the cache table. If it is not forced, the presence of file will preclude the completion of the task. Works recursively if asked.
 
 **parameters**
 
-* path -- a path to the directory 
+* path -- a path to the directory
 * recursive -- removes subdirectories
-* force  -- removes files 
+* force  -- removes files
 
 
 
@@ -839,19 +839,19 @@ The DirectoryCache class provides two methods to send objects to files in a dire
 * **stop**
 
 The **constructor** takes a configuration object which defines defaults required for operation.  Here are the fields that should be in the configuration object:
-	
+
 1. **default\_directory**  -- a top level directory use when parameters do mention it
-2. **file\_namer**	-- a function or a path to a module 
+2. **file\_namer**	-- a function or a path to a module
 3. **object\_list**	-- an iterable shared by this class with the application
 4. **use\_caching** -- if true, *FileOperationsCache* will be used instead of *FileOperations*
-5. **noisy** -- report errors 
+5. **noisy** -- report errors
 6. **crash\_cant\_load** -- if loading fails then exit the program
-7. **backup\_interval** -- in miliseconds 
-	
+7. **backup\_interval** -- in miliseconds
+
 
 
 #### **load\_directory**
- 
+
 Locates a directory and then loads all of its files, expecting them to contain JSON objects. Calls on JSON parsing.
 
 
@@ -886,7 +886,7 @@ Return the reference to the file operations object that this DirectoryCache obje
 
 #### **stop**
 
-Turn off the backup interval. 
+Turn off the backup interval.
 
 
 
@@ -897,6 +897,3 @@ Turn on the backup interval with delta time passed to it.
 **parameters**
 
 * b\_interval --  The delta time between calls to **backup\_to\_directory**
-
-
-

@@ -27,7 +27,14 @@ This package is produced buy [copious.world ![copious.world logo](https://www.co
   <a href="https://www.npmjs.com/package/extra-file-class" target="_blank" ><span style="font-weight:bold;">&#8594;</span> find his package on npm</a>
 
 
-## install"
+## Documentation
+
+The documentation for methods been moved from the README.md file to pages formatted by JSDOC. The may be found at
+the following link:
+
+  <a href="https://www.copious.world/docs" target="_blank" ><span style="font-weight:bold;">&#8594;</span> extra-file-class documentation</a>
+
+## install
 
 
 ```
@@ -68,6 +75,13 @@ An instance of the file caching class can be returned:
 const fs_cache = require('extra-file-class')('cache',config)
 ```
 
+fs/promises can be passed out without any of the module additions:
+
+```
+const fs_cache = require('extra-file-class')('promises')
+```
+> In the above, the parameter is just different than 'dropin' or 'cache' or nothing. Any string that is not those will suffice.
+
 The instance provides acccess to the `fs` module as a field of the instances, e.g.:
 
 ```
@@ -90,11 +104,11 @@ cons path = new PathManager(config)
 
 ## working with the classes
 
+For file operations, there are two classes. The developer just needs to keep in mind that one of the classes caches and the other doesn't. So, if the application requires things to just go to and from files without keeping things in memory, the application will just use **FileOperations**. Otherwise, it will require **FileOperationsCache**.
 
+An application can use either of the two classes for file operations. A third class is available for transfering objects to and from files in particular directories, **DirectoryCache**. 
 
-An application can use either of the two classes foe file operations. A third class is available for transfering objects to and from files in particular directories.
-
-For file operations, there are two classes. The developer just needs to keep in mind that one of the classes caches and the other doesn't. So, if the application wants things to just go to and from files without keeping things in memory, they application will just use **FileOperations**.
+The fourth class, **PathManager**, was added in the last version. 
 
 Here is an example for **FileOperations**:
 
@@ -114,7 +128,7 @@ async function useit() {
 
 ```
 
-The conf, configuration object, does not have to be there. But, it may contain a method or a path to a method that handles EMFILE events.
+In the above example, the conf, configuration object, does not have to be there. But, it may contain a method or a path to a method that handles EMFILE events.
 
 Other events are suppressed, but, they are reported. Events such as EEXIST will be ignored if the method is attempting to create a directory. Usually the aim of creating a directory is to make sure that it is there and it is OK if it is there. Applications can use ***exists*** if there is a need to wipe a directory before creating it.
 

@@ -48,6 +48,8 @@ class FileOperationsWeb {
         this.textEncoder = new TextEncoder();
         this.textDecoder = new TextDecoder();
 
+        this.observers = {}
+
         navigator.storage.getDirectory().then((opfs) => {
             this.opfsRoot = opfs
         }).catch((e) => {
@@ -118,7 +120,12 @@ class FileOperationsWeb {
     }
 
 
-
+    /**
+     * Search the directory identified by *path* in different locations (as previously recorded by add_file)
+     * 
+     * @param {string} path 
+     * @returns string | boolean
+     */
     dir_locus(path) {
         let entry = this.accessed.opfs.dirs[path]
         if ( entry ) {
@@ -138,6 +145,13 @@ class FileOperationsWeb {
         return false
     }
 
+
+    /**
+     * Search the file identified by *path* in different locations (as previously recorded by add_file)
+     * 
+     * @param {string} path 
+     * @returns string | bpolean
+     */
     file_locus(path) {
         let entry = this.accessed.opfs.files[path]
         if ( entry ) {
@@ -157,6 +171,16 @@ class FileOperationsWeb {
         return false
     }
 
+
+
+    /**
+     * Given a path to a file, this method obtains a handle for it, useful for later operations.
+     * The handle will be derived in the file system specified in *locus*. 
+     * The file handle will stored in the table, accessed under its locus in the file table.
+     * 
+     * @param {string} path 
+     * @param {string} locus 
+     */
     async add_file(path,locus) {
         if ( locus === undefined ) {
             locus = "opfs"
@@ -264,6 +288,9 @@ class FileOperationsWeb {
      * @returns boolean
      */
     async dir_maker(path,options) {
+        if ( options === undefined ) {
+            options = {}
+        }
         try {
             if ( (options.locus == "remote") || (options.locus === "user") ) {
                 if ( options.remote && (typeof this.remote_file_com === "function") ) {
@@ -292,9 +319,9 @@ class FileOperationsWeb {
 
 
     /**
-     * dir_maker
+     * file_maker
      * 
-     * create a directory -- assume parent directory exists
+     * create a file -- assume parent directory exists
      * > guards against THROW
      * 
      * 
@@ -304,6 +331,9 @@ class FileOperationsWeb {
      * @returns boolean
      */
     async file_maker(path,options) {
+        if ( options === undefined ) {
+            options = {}
+        }
         try {
             if ( (options.locus == "remote") || (options.locus === "user") ) {
                 if ( options.remote && (typeof this.remote_file_com === "function") ) {
@@ -914,6 +944,7 @@ class FileOperationsWeb {
         }
     }
 
+
     /**
      * 
      * watch
@@ -921,10 +952,51 @@ class FileOperationsWeb {
      * same as fsPromises watch, but wraps the error handling in favor of boolean status report
      * 
      * @param {string} path 
+     * @param {Function} callback
+     * @param {recursive} boolean
      * @returns boolean -- true if the path can be watched, fals otherwise
      * 
      */
-    watch(path) {
+    async watch(path,callback,recursive) {
+
+        let locus = this.file_locus(path)
+        if ( locus ) {
+            let file_handle = this.accessed[locus].files[path]
+            if ( file_handle ) {
+                //
+                const file_callback = (records, observer) => {
+                    if ( callback(records) ) {
+                        observer.disconnect();
+                    }
+                };
+                //   
+                let observer = new FileSystemObserver(file_callback);
+
+                if ( locus === 'opfs' ) {
+                    const syncHandle = await file_handle.createSyncAccessHandle();
+                    await observer.observe(syncHandle);
+                } else {
+                    this.observers[path] = observer
+                    observer.observe(file_handle)
+                }
+            }
+        } else {
+            locus = this.dir_locus(path)
+            let dir_handle = this.accessed[locus].dirs[path]
+            if ( dir_handle ) {
+                //
+                const dir_callback = (records, observer) => {
+                    if ( callback(records) ) {
+                        observer.disconnect();
+                    }
+                };
+                //   
+                let observer = new FileSystemObserver(dir_callback);
+                this.observers[path] = observer
+                observer.observe(dir_handle, { 'recursive' : recursive })
+            }
+        }
+
         return false
     }
 

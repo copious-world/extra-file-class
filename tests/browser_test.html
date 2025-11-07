@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+    <header>
+
+    </header>
+    <body>
+        <button onclick="do_test(event,'file_maker')">test file maker</button>
+
+    </body>
+</html>
+
+<script lang="javascript" >
+
+
+class FileOperationsWeb {
+
+    constructor (conf) {
+        //
+        this.opfsRoot = false;
+        this.textEncoder = new TextEncoder();
+        this.textDecoder = new TextDecoder();
+
+        this.observers = {}
+
+        navigator.storage.getDirectory().then((opfs) => {
+            this.opfsRoot = opfs
+        }).catch((e) => {
+            console.log("this shouldn't happen")
+            throw e
+        })
+        //
+        this.top_dir = false
+        if ( conf.use_file_system ) {
+            window.showDirectoryPicker().then((dirHandle) => {
+                this.verifyPermission(this.top_dir).then((p) => {
+                    if ( p ) {
+                        this.top_dir = dirHandle
+                    }
+                })
+            })
+        }
+        if ( typeof conf.remote  === 'object' ) {
+            this.remote_file_com = conf.remote
+        }
+        //
+        this.accessed = {
+            "opfs" : {
+                "files" : {},
+                "dirs" : {},
+                "changed" : {}
+            },
+            "user" : {
+                "files" : {},
+                "dirs" : {},
+                "changed" : {}
+            },
+            "remote" : {
+                "files" : {},
+                "dirs" : {},
+                "changed" : {}
+            }
+        }
+    }
+
+
+
+
+
+    /**
+     * Search the directory identified by *path* in different locations (as previously recorded by add_file)
+     * 
+     * @param {string} path 
+     * @returns string | boolean
+     */
+    dir_locus(path) {
+        let entry = this.accessed.opfs.dirs[path]
+        if ( entry ) {
+            return "opfs"
+        }
+        //
+        entry = this.accessed.user.dirs[path]
+        if ( entry ) {
+            return "user"
+        }
+        //
+        entry = this.accessed.remote.dirs[path]
+        if ( entry ) {
+            return "remote"
+        }
+        //
+        return false
+    }
+
+
+    /**
+     * Search the file identified by *path* in different locations (as previously recorded by add_file)
+     * 
+     * @param {string} path 
+     * @returns string | bpolean
+     */
+    file_locus(path) {
+        let entry = this.accessed.opfs.files[path]
+        if ( entry ) {
+            return "opfs"
+        }
+        //
+        entry = this.accessed.user.files[path]
+        if ( entry ) {
+            return "user"
+        }
+        //
+        entry = this.accessed.remote.files[path]
+        if ( entry ) {
+            return "remote"
+        }
+        //
+        return false
+    }
+
+
+
+    /**
+     * 
+     * @param {string} path 
+     * @param {string} locus 
+     */
+    async add_file(path,locus) {
+        if ( locus === undefined ) {
+            locus = "opfs"
+        }
+        try {
+            //
+            let file_handle = false
+            if ( locus === "opfs" ) {
+                file_handle = await this.opfsRoot.getFileHandle(path);
+            } else if ( locus === "user" ) {
+                file_handle = await this.top_dir.getFileHandle(path)
+            } else if ( locus === "remote" ) {
+                file_handle = await this.remote_file_com.getFileHandle(path)
+            }
+            if ( file_handle ) {
+                this.accessed[locus].files[path] = file_handle;
+            }
+            //
+        } catch (e) {
+
+        }
+    }
+
+
+    /**
+     * file_maker
+     * 
+     * create a file -- assume parent directory exists
+     * > guards against THROW
+     * 
+     * 
+     * @param {string} path -- a path to the directory to be created
+     * @param {object} options
+     * 
+     * @returns boolean
+     */
+    async file_maker(path,options) {
+        if ( options === undefined ) {
+            options = {}
+        }
+        try {
+            if ( (options.locus == "remote") || (options.locus === "user") ) {
+                if ( options.remote && (typeof this.remote_file_com === "function") ) {
+                    let fileHandle = await this.remote_file_com.file_maker(path)
+                    this.accessed.user.files[path] = fileHandle
+                } else if ( (options.locus === "user") ) {
+                    let opts = Object.assign({create : true },options)
+                    delete opts.locus
+                    const fileHandle = await this.top_dir.getFileHandle(path,opts);
+                    this.accessed.user.files[path] = fileHandle
+                } else {
+                    return false
+                }
+            } else {
+                let opts = Object.assign({create : true },options)
+                delete opts.locus
+                const fileHandle = await this.opfsRoot.getFileHandle(path, opts);
+                this.accessed.opfs.files[path] = fileHandle
+            }
+        } catch(e) {
+            return false
+        }
+        return true
+    }
+
+
+}
+
+
+let web_fops = new FileOperationsWeb({})
+
+
+async function do_test(event,test_name = 'file_maker') {
+
+    if ( web_fops ) {
+        await web_fops.file_maker("we-allow-file-without-dir-sep")
+    }
+    
+}
+    
+</script>

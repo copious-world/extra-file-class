@@ -1,10 +1,197 @@
-
-
-
 // something like path for web page
 
 // https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system
 // https://web.dev/articles/origin-private-file-system
+
+
+// https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/webkitdirectory
+
+
+/*
+
+<input type="file" id="file-picker" name="fileList" webkitdirectory multiple />
+<output id="output"></output>
+
+// ---- 
+
+const output = document.getElementById("output");
+const filePicker = document.getElementById("file-picker");top_dir
+
+filePicker.addEventListener("change", (event) => {
+  const files = event.target.files;
+
+  for (const file of files) {
+    output.textContent += `${file.webkitRelativePath}\n`;
+  }
+});
+
+
+async function getNewFileHandle() {
+  const opts = {
+    types: [
+      {
+        description: "Text file",
+        accept: { "text/plain": [".txt"] },
+      },
+    ],
+  };
+  return await window.showSaveFilePicker(opts);
+}
+
+
+
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+const pickerOpts = {
+  types: [
+    {
+      description: "Images",
+      accept: {
+        "image/*": [".png", ".gif", ".jpeg", ".jpg"],
+      },
+    },
+  ],
+  excludeAcceptAllOption: true,
+  multiple: false,
+};
+
+
+// create a reference for our file handle
+let fileHandle;
+
+async function getFile() {
+  // open file picker, destructure the one element returned array
+  [fileHandle] = await window.showOpenFilePicker(pickerOpts);
+
+  // run code with our fileHandle
+}
+
+
+
+//  getAsFileSystemHandle
+
+
+elem.addEventListener("dragover", (e) => {
+  // Prevent navigation.
+  e.preventDefault();
+});
+elem.addEventListener("drop", async (e) => {
+  // Prevent navigation.
+  e.preventDefault();
+  const handlesPromises = [...e.dataTransfer.items]
+    // kind will be 'file' for file/directory entries.
+    .filter((x) => x.kind === "file")
+    .map((x) => x.getAsFileSystemHandle());
+  const handles = await Promise.all(handlesPromises);
+
+  // Process all of the items.
+  for (const handle of handles) {
+    if (handle.kind === "file") {
+      // run code for if handle is a file
+    } else if (handle.kind === "directory") {
+      // run code for is handle is a directory
+    }
+  }
+});
+
+
+
+
+
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+<p>Drag files and/or directories to the box below!</p>
+
+<div id="dropzone">
+  <div id="boxtitle">Drop Files Here</div>
+</div>
+
+<h2>Directory tree:</h2>
+
+<ul id="listing"></ul>
+
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+#dropzone {
+  text-align: center;
+  width: 300px;
+  height: 100px;
+  margin: 10px;
+  padding: 10px;
+  border: 4px dashed red;
+  border-radius: 10px;
+}
+
+#boxtitle {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  color: black;
+  font:
+    bold 2em "Arial",
+    sans-serif;
+  width: 300px;
+  height: 100px;
+}
+
+body {
+  font:
+    14px "Arial",
+    sans-serif;
+}
+
+//  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+let dropzone = document.getElementById("dropzone");
+let listing = document.getElementById("listing");
+
+function scanFiles(item, container) {
+  let elem = document.createElement("li");
+  elem.textContent = item.name;
+  container.appendChild(elem);
+
+  if (item.isDirectory) {
+    let directoryReader = item.createReader();
+    let directoryContainer = document.createElement("ul");
+    container.appendChild(directoryContainer);
+    directoryReader.readEntries((entries) => {
+      entries.forEach((entry) => {
+        scanFiles(entry, directoryContainer);
+      });
+    });
+  }
+}
+
+dropzone.addEventListener("dragover", (event) => {
+  event.preventDefault();
+});
+
+
+dropzone.addEventListener("drop", (event) => {
+  let items = event.dataTransfer.items;
+
+  event.preventDefault();
+  listing.textContent = "";
+
+  for (const item of items) {
+    const entry = item.webkitGetAsEntry();
+
+    if (entry) {
+      scanFiles(entry, listing);
+    }
+  }
+});
+
+
+//  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+
+*/
+
 
 /**
  * @classdesc
@@ -43,7 +230,11 @@ class FileOperationsWeb {
      * @param {object} conf 
      */
     constructor (conf) {
+        if ( conf === undefined ) {
+            conf = {}
+        }
         //
+        this.conf = conf   // methods having to do with directory and file picking
         this.opfsRoot = false;
         this.textEncoder = new TextEncoder();
         this.textDecoder = new TextDecoder();
@@ -58,14 +249,14 @@ class FileOperationsWeb {
         })
         //
         this.top_dir = false
-        if ( conf.use_file_system ) {
-            window.showDirectoryPicker().then((dirHandle) => {
-                this.verifyPermission(this.top_dir).then((p) => {
-                    if ( p ) {
-                        this.top_dir = dirHandle
-                    }
-                })
-            })
+        this.user_dirs_supported = this.check_user_dir_support()
+        this.top_dir_name = ""
+        
+        if ( conf.use_file_system ) {       // conf may be set up to show a modal on timeout or it may just attach handler to a button
+            if ( typeof conf.top_dir_name === "string" ) {
+                this.top_dir_name = conf.top_dir_name
+            }
+            this.schedule_user_dir_request(conf)       // the browser (if it suppors dir selection) needs a gesture (button click)
         }
         if ( typeof conf.remote  === 'object' ) {
             this.remote_file_com = conf.remote
@@ -101,21 +292,25 @@ class FileOperationsWeb {
      * @return {boolean} True if the user has granted read/write permission.
      */
     async verifyPermission(fileHandle, withWrite) {
-        const opts = {};
-        if (withWrite) {
-            opts.writable = true;
-            // For Chrome 86 and later...
-            opts.mode = 'readwrite';
+        try {
+            const opts = {};
+            if (withWrite) {
+                opts.writable = true;
+                // For Chrome 86 and later...
+                opts.mode = 'readwrite';
+            }
+            // Check if we already have permission, if so, return true.
+            if (await fileHandle.queryPermission(opts) === 'granted') {
+                return true;
+            }
+            // Request permission to the file, if the user grants permission, return true.
+            if (await fileHandle.requestPermission(opts) === 'granted') {
+                return true;
+            }
+        } catch (e) {
+            return false
         }
-        // Check if we already have permission, if so, return true.
-        if (await fileHandle.queryPermission(opts) === 'granted') {
-            return true;
-        }
-        // Request permission to the file, if the user grants permission, return true.
-        if (await fileHandle.requestPermission(opts) === 'granted') {
-            return true;
-        }
-        // The user did nt grant permission, return false.
+        // The user didn't grant permission, return false.
         return false;
     }
 
@@ -132,9 +327,11 @@ class FileOperationsWeb {
             return "opfs"
         }
         //
-        entry = this.accessed.user.dirs[path]
-        if ( entry ) {
-            return "user"
+        if ( (this.top_dir !== false) ) {
+            entry = this.accessed.user.dirs[path]
+            if ( entry ) {
+                return "user"
+            }
         }
         //
         entry = this.accessed.remote.dirs[path]
@@ -190,7 +387,7 @@ class FileOperationsWeb {
             let file_handle = false
             if ( locus === "opfs" ) {
                 file_handle = await this.opfsRoot.getFileHandle(path);
-            } else if ( locus === "user" ) {
+            } else if ( locus === "user" && (this.top_dir !== false) ) {
                 file_handle = await this.top_dir.getFileHandle(path)
             } else if ( locus === "remote" ) {
                 file_handle = await this.remote_file_com.getFileHandle(path)
@@ -240,7 +437,7 @@ class FileOperationsWeb {
         if ( this.accessed.opfs.dirs[src] ) {
             return true
         }
-        if ( this.accessed.user.dirs[src] ) {
+        if ( (this.top_dir !== false) && this.accessed.user.dirs[src] ) {
             return true
         }
         if ( this.accessed.remote.dirs[src] ) {
@@ -263,11 +460,52 @@ class FileOperationsWeb {
         if ( this.accessed.opfs.files[src] ) {
             return true
         }
-        if ( this.accessed.user.files[src] ) {
+        if ( (this.top_dir !== false) && this.accessed.user.files[src] ) {
             return true
         }
         if ( this.accessed.remote.files[src] ) {
             return true
+        }
+        return false
+    }
+
+
+
+    // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+    /**
+     * 
+     * @param {string} path 
+     * @param {object} options 
+     * @returns object | boolean  (dirHandle or false)
+     */
+    async get_parent_user_dir(path,options) {
+        let pth = path
+        if ( pth.indexOf('/') > 0 ) {
+            pth = path.substring(0,path.lastIndexOf('/'))
+        } else {
+            return this.top_dir
+        }
+        let dir_handle = this.accessed.user.dirs[pth]
+        if ( dir_handle !== undefined ) {
+            return dir_handle
+        }
+        if ( options.recursive ) {
+            let path_parts = pth.split('/')
+            //
+            let bread_crumb = this.top_dir_name
+            if ( path_parts[0] === this.top_dir_name ) {
+                path_parts.shift()
+            }
+            //
+            let status = true
+            for ( let dname of path_parts ) {
+                bread_crumb += `/${dname}`
+                // locus === "user"
+                status = await this.dir_maker(bread_crumb,{ "locus" : "user" })  // don't make it recursive
+                if ( !status ) return false
+            }
         }
         return false
     }
@@ -291,16 +529,26 @@ class FileOperationsWeb {
         if ( options === undefined ) {
             options = {}
         }
+        if ( (options.locus === "user") && !(this.user_dirs_supported) ) {
+            return false
+        }
         try {
             if ( (options.locus == "remote") || (options.locus === "user") ) {
                 if ( options.remote && (typeof this.remote_file_com === "function") ) {
                     let directoryHandle = await this.remote_file_com.dir_maker(path)
                     this.accessed.user.dirs[path] = directoryHandle
-                } else if ( (options.locus === "user") ) {
+                } else if ( (options.locus === "user") && (this.top_dir !== false) ) {
                     let opts = Object.assign({create : true },options)
                     delete opts.locus
-                    const directoryHandle = await this.top_dir.getDirectoryHandle(path,opts);
-                    this.accessed.user.dirs[path] = directoryHandle
+                    let ok = await this.verifyPermission(this.top_dir,true)
+                    if ( !ok ) {
+                        ok = await this.interactive_permission()
+                    }
+                    let dir_handle = ok ? await this.get_parent_user_dir(path,options) : false
+                    if ( ok && dir_handle ) {
+                        const directoryHandle = await dir_handle.getDirectoryHandle(path,opts);
+                        this.accessed.user.dirs[path] = directoryHandle
+                    }
                 } else {
                     return false
                 }
@@ -315,7 +563,6 @@ class FileOperationsWeb {
         }
         return true
     }
-
 
 
     /**
@@ -339,11 +586,18 @@ class FileOperationsWeb {
                 if ( options.remote && (typeof this.remote_file_com === "function") ) {
                     let fileHandle = await this.remote_file_com.file_maker(path)
                     this.accessed.user.files[path] = fileHandle
-                } else if ( (options.locus === "user") ) {
+                } else if ( (options.locus === "user") && (this.top_dir !== false) ) {
                     let opts = Object.assign({create : true },options)
                     delete opts.locus
-                    const fileHandle = await this.top_dir.getFileHandle(path,opts);
-                    this.accessed.user.files[path] = fileHandle
+                    let ok = await this.verifyPermission(this.top_dir,true)
+                    if ( !ok ) {
+                        ok = await this.interactive_permission()
+                    }
+                    let dir_handle = ok ? await this.get_parent_user_dir(path,options) : false
+                    if ( ok && dir_handle ) {
+                        const fileHandle = await dir_handle.getFileHandle(path,opts);
+                        this.accessed.user.files[path] = fileHandle
+                    }
                 } else {
                     return false
                 }
@@ -376,6 +630,11 @@ class FileOperationsWeb {
      * @returns string | boolean
      */
     async ensure_directories(a_path,top_dir,locus,is_file_path,app_cb) {
+        //
+        if ( (this.top_dir !== false) && (locus === "user") ) {
+            console.log("user file system not supported in this browser")
+            return false
+        }
         //
         let sep = path.sep
         let c_path = top_dir ? `${top_dir}${sep}${a_path}` : a_path
@@ -413,7 +672,7 @@ class FileOperationsWeb {
         let locus = this.dir_locus(upath)
         try {
             let dir_handle = false;
-            if ( locus === "user" ) {
+            if ( locus === "user" && (this.top_dir !== false) ) {
                 dir_handle = this.top_dir
             } else if ( locus === "opfs" ) {
                 dir_handle = this.opfsRoot
@@ -422,9 +681,9 @@ class FileOperationsWeb {
             }
             if ( dir_handle ) {
                 if ( recursive ) {
-                    await this.top_dir.removeEntry(upath,{ 'recursive': true })
+                    await dir_handle.removeEntry(upath,{ 'recursive': true })
                 } else {
-                    await this.top_dir.removeEntry(upath)
+                    await dir_handle.removeEntry(upath)
                 }
                 delete this.accessed[locus].dirs[upath]
             }
@@ -450,7 +709,7 @@ class FileOperationsWeb {
         let locus = this.dir_locus(path)
         try {
             let dir_handle = false;
-            if ( locus === "user" ) {
+            if ( locus === "user" && (this.top_dir !== false) ) {
                 dir_handle = this.top_dir
             } else if ( locus === "opfs" ) {
                 dir_handle = this.opfsRoot
@@ -483,7 +742,7 @@ class FileOperationsWeb {
         let locus = this.file_locus(path)
         try {
             let dir_handle = false;
-            if ( locus === "user" ) {
+            if ( locus === "user"&& (this.top_dir !== false) ) {
                 dir_handle = this.top_dir
             } else if ( locus === "opfs" ) {
                 dir_handle = this.opfsRoot
@@ -491,7 +750,7 @@ class FileOperationsWeb {
                 dir_handle = this.remote_file_com
             }
             if ( dir_handle ) {
-                await this.top_dir.removeEntry(path,{ 'recursive': true })
+                await dir_handle.removeEntry(path,{ 'recursive': true })
                 delete this.accessed[locus].files[path]
             }
         } catch(e) {
@@ -620,7 +879,7 @@ class FileOperationsWeb {
         }
     }
 
-       
+
     /**
      * json_data_reader
      * 
@@ -949,7 +1208,7 @@ class FileOperationsWeb {
      * 
      * watch
      * 
-     * same as fsPromises watch, but wraps the error handling in favor of boolean status report
+     * 
      * 
      * @param {string} path 
      * @param {Function} callback
@@ -1033,7 +1292,7 @@ class FileOperationsWeb {
      * @returns boolean
      */
     async move(src, dest, opts = {}) {
-        if ( await this.exists(dest) && !opts.overwrite ) {
+        if ( this.exists(dest) && !opts.overwrite ) {
             return false
         }
         return await this.file_mover(src,dest) 
@@ -1048,9 +1307,8 @@ class FileOperationsWeb {
      * 
      * @param {string} dir 
      * @param {object} options 
-     * @param {Function} cb 
      */
-    async emptyDir(dir,options,cb) {
+    async emptyDir(dir,options) {
         if ( !(await this.exists(dir)) ) {   // create an empty directory
             await this.ensure_directories(dir)
         } else {
@@ -1094,8 +1352,8 @@ class FileOperationsWeb {
      * 
      * @returns boolean
      */
-    async outputFile(path, str, encoding = 'utf-8') {
-        return await this.output_string(path,str,ce_flags)
+    async outputFile(path, str) {
+        return await this.output_string(path,str)
     }
 
 
@@ -1169,6 +1427,223 @@ class FileOperationsWeb {
                  && (destStat.dev !== undefined) 
                  && (destStat.ino === srcStat.ino)
                  && (destStat.dev === srcStat.dev)
+    }
+
+
+    /**
+     * 
+     * The application that wants to manipulate directories,
+     * can configure the FileOperationsWeb class to provide a directory 
+     * selection when they want the selection to occur. 
+     * 
+     * Directory selection is only available in a limited number of browsers. 
+     * So, an application may use a configuration permitting these operations 
+     * if it is aware that it is in a supporting browser.
+     * 
+     * The application configuration will proceed from within the constructor if the
+     * configuration has a truthy field `dir_modal_button_id`.  This field, **`dir_modal_button_id`**
+     * is usually the id of a button element some where in the web page.
+     * 
+     *  This method installs an **onclick** event handler on the button object.
+     *  If the button does not exists, or if 'showDirectoryPicker' is not available,
+     *  then, the operation will not take place nor be available later.
+     * 
+     * The application may choose to show a modal at some fixed time after the constructor calls this method.
+     * If the configuration object has a field **`when_dir_modal`** along with another field **`dir_modal_id`**,
+     * then this method will schedule a time when_dir_modal` milliseconds later to show the modal who id is `dir_modal_id`.
+     * 
+     * @param {object} conf 
+     */
+    schedule_user_dir_request(conf) {
+        //
+        if ( typeof conf !== 'object' ) {
+            throw new Error("schedule_user_dir_request: conf parameter must be an object")
+        }
+        if ( !("showDirectoryPicker" in window) ) {
+            console.log("showDirectoryPicker is not supported")
+            return false
+        }
+        if ( (typeof conf.dir_modal_button_id !== "string") ) {
+            console.log("no element defined for triggering directory handling")
+            return false
+        }
+        //
+        let modal_box_button = document.getElementById(conf.dir_modal_button_id)
+        if ( modal_box_button ) {
+            let self = this
+            modal_box_button.onclick = (ev) => {
+                //
+                let opts = {}
+                if ( self.top_dir_name ) {
+                    opts.startIn = self.top_dir_name
+                }
+                //
+                window.showDirectoryPicker(opts).then((dirHandle) => {
+                    self.verifyPermission(dirHandle).then((p) => {
+                        if ( p ) {
+                            dirHandle.resolve().then((names) => {
+                                console.log(names)
+                                self.top_dir_name = names.join('/')
+                            })
+                            self.top_dir = dirHandle
+                        }
+                    })
+                })
+                //
+            }
+            if ( conf.when_dir_modal && conf.dir_modal_id ) {
+                let modal_box = document.getElementById(conf.dir_modal_id)
+                if ( modal_box ) {
+                    setTimeout(() => {
+                        modal_box.show()
+                    },conf.when_dir_modal);
+                }
+            }
+        }
+    }
+
+
+    async interactive_permission() {      // must get a user event to pass permission tests
+        let conf = this.conf
+        if ( conf.when_dir_modal && conf.dir_modal_id ) {
+            let modal_box = document.getElementById(conf.dir_modal_id)
+            if ( modal_box ) {
+                let p = new Promise((resolve,reject) => {
+                    modal_box.addEventListener("close", (e) => {
+                        if ( favDialog.returnValue === "ok" ) {
+                            resolve(favDialog.returnValue)
+                        } else {
+                            reject(favDialog.returnValue)
+                        }
+                    })
+                    modal_box.show()
+                })
+            }
+        }
+    }
+
+
+    /**
+     * 
+     * The application that wants to download files,
+     * can configure the FileOperationsWeb class to provide file 
+     * selection when they want the selection to occur. 
+     * 
+     * File selection, done by the file picker, is only available in a limited number of browsers. 
+     * So, an application may use a configuration permitting these operations 
+     * if it is aware that it is in a supporting browser.
+     * 
+     * The application configuration has a field `file_upload_modal_button_id`.  This field, **`file_upload_modal_button_id`**,
+     * is usually the id of a button element somewhere in the web page.
+     * 
+     *  This method installs an **onclick** event handler on the button object.
+     *  If the button does not exists, or if 'showOpenFilePicker' is not available,
+     *  then, the operation will not take place nor be available later.
+     * 
+     * @param {object} conf 
+     * @returns boolean
+     */
+    interactive_file_retrieval() {
+        let conf = this.conf
+        //
+        if ( !("showOpenFilePicker" in window) ) {
+            console.log("showDirectoryPicker is not supported")
+            return false
+        }
+        if ( (typeof conf.file_upload_modal_button_id !== "string") ) {
+            console.log("no element defined for triggering file loading")
+            return false
+        }
+        //
+        let modal_box_button = document.getElementById(conf.file_upload_modal_button_id)
+        if ( modal_box_button ) {
+            let self = this
+            modal_box_button.onclick = (ev) => {
+                //
+                window.showDirectoryPicker().then((dirHandle) => {
+                    self.verifyPermission(dirHandle).then((p) => {
+                        if ( p ) {
+                            self.top_dir = dirHandle
+                            self.top_dir_name = dirHandle.name
+                        }
+                    })
+                })
+                //
+            }
+            return true
+        }
+        //
+        return false
+    }
+
+
+
+    /**
+     * 
+     * The application that wants to download files,
+     * can configure the FileOperationsWeb class to provide file 
+     * selection when they want the selection to occur. 
+     * 
+     * File selection, done by the file picker, is only available in a limited number of browsers. 
+     * So, an application may use a configuration permitting these operations 
+     * if it is aware that it is in a supporting browser.
+     * 
+     * The application configuration has a field `file_dowload_modal_button_id`.
+     * This field, **`file_dowload_modal_button_id`**,
+     * is usually the id of a button element somewhere in the web page.
+     * 
+     *  This method installs an **onclick** event handler on the button object.
+     *  If the button does not exists, or if 'showSaveFilePicker' is not available,
+     *  then, the operation will not take place nor be available later.
+     * 
+     * @param {object} conf 
+     * @returns boolean
+     */
+    interactive_file_download() {
+        let conf = this.conf
+
+        if ( !("showSaveFilePicker" in window) ) {
+            console.log("showDirectoryPicker is not supported")
+            return false
+        }
+        if ( (typeof conf.file_dowload_modal_button_id !== "string") ) {
+            console.log("no element defined for triggering file loading")
+            return false
+        }
+
+        let modal_box_button = document.getElementById(conf.file_dowload_modal_button_id)
+        if ( modal_box_button ) {
+            let self = this
+            modal_box_button.onclick = (ev) => {
+                //
+                window.showDirectoryPicker().then((dirHandle) => {
+                    self.verifyPermission(dirHandle).then((p) => {
+                        if ( p ) {
+                            self.top_dir = dirHandle
+                        }
+                    })
+                })
+                //
+            }
+            return true
+        }
+        return false
+    }
+
+    /**
+     * At the time of this release,
+     * the directory picker is available to some but not all browsers.
+     * If the directory picker is not available,then it can be assumed that the file picker
+     * is not available.
+     * 
+     * @returns boolean
+     */
+    check_user_dir_support() {
+        if ( !("showDirectoryPicker" in window) ) {
+            console.log("showDirectoryPicker is not supported")
+            return false
+        }
+        return true
     }
 
 }

@@ -4,8 +4,8 @@
 
     </header>
     <body>
+        <button id="setup-user-dir">Set Up User Directory</button>
         <button onclick="do_test(event,'file_maker')">test file maker</button>
-
     </body>
 </html>
 
@@ -13,9 +13,12 @@
 
 
 class FileOperationsWeb {
-
     constructor (conf) {
+        if ( conf === undefined ) {
+            conf = {}
+        }
         //
+        this.conf = conf   // methods having to do with directory and file picking
         this.opfsRoot = false;
         this.textEncoder = new TextEncoder();
         this.textDecoder = new TextDecoder();
@@ -30,14 +33,14 @@ class FileOperationsWeb {
         })
         //
         this.top_dir = false
-        if ( conf.use_file_system ) {
-            window.showDirectoryPicker().then((dirHandle) => {
-                this.verifyPermission(this.top_dir).then((p) => {
-                    if ( p ) {
-                        this.top_dir = dirHandle
-                    }
-                })
-            })
+        this.user_dirs_supported = this.check_user_dir_support()
+        this.top_dir_name = ""
+        
+        if ( conf.use_file_system ) {       // conf may be set up to show a modal on timeout or it may just attach handler to a button
+            if ( typeof conf.top_dir_name === "string" ) {
+                this.top_dir_name = conf.top_dir_name
+            }
+            this.schedule_user_dir_request(conf)       // the browser (if it suppors dir selection) needs a gesture (button click)
         }
         if ( typeof conf.remote  === 'object' ) {
             this.remote_file_com = conf.remote
@@ -64,6 +67,36 @@ class FileOperationsWeb {
 
 
 
+    /**
+     * Verify the user has granted permission to read or write to the file, if
+     * permission hasn't been granted, request permission.
+     *
+     * @param {FileSystemFileHandle} fileHandle File handle to check.
+     * @param {boolean} withWrite True if write permission should be checked.
+     * @return {boolean} True if the user has granted read/write permission.
+     */
+    async verifyPermission(fileHandle, withWrite) {
+        try {
+            const opts = {};
+            if (withWrite) {
+                opts.writable = true;
+                // For Chrome 86 and later...
+                opts.mode = 'readwrite';
+            }
+            // Check if we already have permission, if so, return true.
+            if (await fileHandle.queryPermission(opts) === 'granted') {
+                return true;
+            }
+            // Request permission to the file, if the user grants permission, return true.
+            if (await fileHandle.requestPermission(opts) === 'granted') {
+                return true;
+            }
+        } catch (e) {
+            return false
+        }
+        // The user didn't grant permission, return false.
+        return false;
+    }
 
 
     /**
@@ -78,9 +111,11 @@ class FileOperationsWeb {
             return "opfs"
         }
         //
-        entry = this.accessed.user.dirs[path]
-        if ( entry ) {
-            return "user"
+        if ( (this.top_dir !== false) ) {
+            entry = this.accessed.user.dirs[path]
+            if ( entry ) {
+                return "user"
+            }
         }
         //
         entry = this.accessed.remote.dirs[path]
@@ -120,6 +155,9 @@ class FileOperationsWeb {
 
 
     /**
+     * Given a path to a file, this method obtains a handle for it, useful for later operations.
+     * The handle will be derived in the file system specified in *locus*. 
+     * The file handle will stored in the table, accessed under its locus in the file table.
      * 
      * @param {string} path 
      * @param {string} locus 
@@ -133,7 +171,7 @@ class FileOperationsWeb {
             let file_handle = false
             if ( locus === "opfs" ) {
                 file_handle = await this.opfsRoot.getFileHandle(path);
-            } else if ( locus === "user" ) {
+            } else if ( locus === "user" && (this.top_dir !== false) ) {
                 file_handle = await this.top_dir.getFileHandle(path)
             } else if ( locus === "remote" ) {
                 file_handle = await this.remote_file_com.getFileHandle(path)
@@ -146,6 +184,132 @@ class FileOperationsWeb {
 
         }
     }
+
+
+
+    /**
+     * different_drive
+     * 
+     * Uses the file system stat methods to determine if the files are on different drives
+     * 
+     * @param {string} src 
+     * @param {string} dest 
+     */
+    async different_drive(src,dest) {
+        if ( this.accessed.opfs.files[src] && this.accessed.opfs.files[dest]) {
+            return false
+        }
+        if ( this.accessed.user.files[src] && this.accessed.user.files[dest]) {
+            return false
+        }
+        if ( this.accessed.remote.files[src] && this.accessed.remote.files[dest]) {
+            return false
+        }
+        return true
+    }
+
+    /**
+     * is_dir
+     * 
+     * Calls on lstat, and if the directory exists, 
+     * this will return the result of isDirectory
+     * 
+     * @param {string} path 
+     * @returns boolean
+     */
+    async is_dir() {
+        if ( this.accessed.opfs.dirs[src] ) {
+            return true
+        }
+        if ( (this.top_dir !== false) && this.accessed.user.dirs[src] ) {
+            return true
+        }
+        if ( this.accessed.remote.dirs[src] ) {
+            return true
+        }
+        return false
+    }
+
+
+    /**
+     * is_file
+     * 
+     * Calls on lstat, and if the directory exists, 
+     * this will return the result of isFile
+     * 
+     * @param {string} path 
+     * @returns boolean
+     */
+    async is_file() {
+        if ( this.accessed.opfs.files[src] ) {
+            return true
+        }
+        if ( (this.top_dir !== false) && this.accessed.user.files[src] ) {
+            return true
+        }
+        if ( this.accessed.remote.files[src] ) {
+            return true
+        }
+        return false
+    }
+
+    async get_parent_user_dir(path,is_file) {
+        
+    }
+
+    // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+    /**
+     * dir_maker
+     * 
+     * create a directory -- assume parent directory exists
+     * > guards against THROW
+     * 
+     * 
+     * @param {string} path -- a path to the directory to be created
+     * @param {object} options
+     * 
+     * @returns boolean
+     */
+    async dir_maker(path,options) {
+        if ( options === undefined ) {
+            options = {}
+        }
+        if ( (options.locus === "user") && !(this.user_dirs_supported) ) {
+            return false
+        }
+        try {
+            if ( (options.locus == "remote") || (options.locus === "user") ) {
+                if ( options.remote && (typeof this.remote_file_com === "function") ) {
+                    let directoryHandle = await this.remote_file_com.dir_maker(path)
+                    this.accessed.user.dirs[path] = directoryHandle
+                } else if ( (options.locus === "user") && (this.top_dir !== false) ) {
+                    let opts = Object.assign({create : true },options)
+                    delete opts.locus
+                    let ok = await this.verifyPermission(this.top_dir,true)
+                    if ( !ok ) {
+                        ok = await this.interactive_permission()
+                    }
+                    let dir_handle = ok ? this.get_parent_user_dir(path,options) : false
+                    if ( ok ) {
+                        const directoryHandle = await this.top_dir.getDirectoryHandle(path,opts);
+                        this.accessed.user.dirs[path] = directoryHandle
+                    }
+                } else {
+                    return false
+                }
+            } else {
+                let opts = Object.assign({create : true },options)
+                delete opts.locus
+                const directoryHandle = await this.opfsRoot.getDirectoryHandle(path, opts);
+                this.accessed.opfs.dirs[path] = directoryHandle
+            }
+        } catch(e) {
+            return false
+        }
+        return true
+    }
+
 
 
     /**
@@ -169,11 +333,18 @@ class FileOperationsWeb {
                 if ( options.remote && (typeof this.remote_file_com === "function") ) {
                     let fileHandle = await this.remote_file_com.file_maker(path)
                     this.accessed.user.files[path] = fileHandle
-                } else if ( (options.locus === "user") ) {
+                } else if ( (options.locus === "user") && (this.top_dir !== false) ) {
                     let opts = Object.assign({create : true },options)
                     delete opts.locus
-                    const fileHandle = await this.top_dir.getFileHandle(path,opts);
-                    this.accessed.user.files[path] = fileHandle
+                    let ok = await this.verifyPermission(this.top_dir,true)
+                    if ( !ok ) {
+                        ok = await this.interactive_permission()
+                    }
+                    let dir_handle = ok ? this.get_parent_user_dir(path,options) : false
+                    if ( ok && dir_handle ) {
+                        const fileHandle = await dir_handle.getFileHandle(path,opts);
+                        this.accessed.user.files[path] = fileHandle
+                    }
                 } else {
                     return false
                 }
@@ -189,19 +360,140 @@ class FileOperationsWeb {
         return true
     }
 
+    // ........
+
+    /**
+     * 
+     */
+    schedule_user_dir_request(conf) {
+        //
+        if ( typeof conf !== 'object' ) {
+            throw new Error("schedule_user_dir_request: conf parameter must be an object")
+        }
+        if ( !("showDirectoryPicker" in window) ) {
+            console.log("showDirectoryPicker is not supported")
+            return false
+        }
+        //
+        let modal_box_button = document.getElementById(conf.dir_modal_button_id)
+        if ( modal_box_button ) {
+            let self = this
+            modal_box_button.onclick = (ev) => {
+                //
+                let opts = {}
+                if ( self.top_dir_name ) {
+                    opts.startIn = self.top_dir_name
+                }
+                //
+                window.showDirectoryPicker(opts).then((dirHandle) => {
+                    self.verifyPermission(dirHandle).then((p) => {
+                        if ( p ) {
+                            self.top_dir = dirHandle
+                            self.top_dir_name = dirHandle.name
+                        }
+                    })
+                })
+                //
+            }
+            if ( conf.when_dir_modal && conf.dir_modal_id ) {
+                let modal_box = document.getElementById(conf.dir_modal_id)
+                if ( modal_box ) {
+                    setTimeout(() => {
+                        modal_box.show()
+                    },conf.when_dir_modal);
+                }
+            }
+        }
+    }
+
+
+
+    check_user_dir_support() {
+        if ( !("showDirectoryPicker" in window) ) {
+            console.log("showDirectoryPicker is not supported")
+            return false
+        }
+        return true
+    }
 
 }
 
 
-let web_fops = new FileOperationsWeb({})
 
+const pickerOpts = {
+  types: [
+    {
+      description: "Images",
+      accept: {
+        "image/*": [".png", ".gif", ".jpeg", ".jpg"],
+      },
+    },
+  ],
+  excludeAcceptAllOption: true,
+  multiple: false,
+};
+
+
+// create a reference for our file handle
+let fileHandle;
+
+async function getFile() {
+  // open file picker, destructure the one element returned array
+    try {
+        [fileHandle] = await window.showOpenFilePicker(pickerOpts);
+        return fileHandle
+    } catch (e) {
+        return false /// most likely the user canceled
+    }
+}
+
+
+async function getNewFileHandle() {
+  const opts = {
+    types: [
+      {
+        description: "Text file",
+        accept: { "text/plain": [".txt"] },
+      },
+    ],
+  };
+  try {
+      let f_handle = await window.showSaveFilePicker(opts);
+      return f_handle
+  } catch (e) {
+    return false /// most likely the user canceled
+  }
+}
+
+
+
+let web_fops = new FileOperationsWeb({
+    "use_file_system" : true,
+    "dir_modal_button_id" : "setup-user-dir"
+})
 
 async function do_test(event,test_name = 'file_maker') {
 
+    // let saver_file_handle = await getNewFileHandle()
+    // await getFile()
+
     if ( web_fops ) {
+        //
+        const isOpera = navigator.userAgent.includes("OPR");
+        //
         await web_fops.file_maker("we-allow-file-without-dir-sep")
+        //
+        if ( isOpera ) {
+            let opts = {
+                "locus" : "user"
+            }
+            await web_fops.file_maker("some.json",opts)
+            await web_fops.dir_maker("cucumber",opts)
+            // opts.recursive = true
+            // await web_fops.dir_maker("cucumber/watermelon/orange",opts)
+        }
     }
-    
+    //
 }
-    
+
 </script>

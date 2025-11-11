@@ -235,17 +235,20 @@ class FileOperationsWeb {
         }
         //
         this.conf = conf   // methods having to do with directory and file picking
-        this.opfsRoot = false;
+        this.opfs_root = false;
         this.textEncoder = new TextEncoder();
         this.textDecoder = new TextDecoder();
-
+        //
         this.observers = {}
-
-        navigator.storage.getDirectory().then((opfs) => {
-            this.opfsRoot = opfs
-        }).catch((e) => {
-            console.log("this shouldn't happen")
-            throw e
+        //
+        this.initializer_promise = new Promise((resolve,reject) => {
+            navigator.storage.getDirectory().then((opfs) => {
+                this.opfs_root = opfs
+                resolve(opfs)
+            }).catch((e) => {
+                console.log("this shouldn't happen")
+                reject(e)
+            })
         })
         //
         this.top_dir = false
@@ -281,7 +284,23 @@ class FileOperationsWeb {
         }
     }
 
+ 
+    in_web_worker() {
+        if ( (typeof window === "undefined" ) ) {
+            if ( self.constructor.name.indexOf("Worker") ) {
+                return 2
+            }
+            return true
+        }
+        return false
+    }
 
+    async wait_initialization() {
+        if ( this.initializer_promise ) {
+           await this.initializer_promise
+           this.initializer_promise = false
+        }
+    }
 
     /**
      * Verify the user has granted permission to read or write to the file, if
@@ -321,22 +340,32 @@ class FileOperationsWeb {
      * @param {string} path 
      * @returns string | boolean
      */
-    dir_locus(path) {
-        let entry = this.accessed.opfs.dirs[path]
-        if ( entry ) {
-            return "opfs"
-        }
-        //
-        if ( (this.top_dir !== false) ) {
-            entry = this.accessed.user.dirs[path]
-            if ( entry ) {
-                return "user"
+    dir_locus(path,options) {
+        if ( options.locus ) {
+            let lmap = this.accessed[options.locus]
+            if ( lmap ) {
+                let entry = lmap.files[path]
+                if ( entry ) {
+                    return options.locus
+                }
             }
-        }
-        //
-        entry = this.accessed.remote.dirs[path]
-        if ( entry ) {
-            return "remote"
+        } else {
+            let entry = this.accessed.opfs.dirs[path]
+            if ( entry ) {
+                return "opfs"
+            }
+            //
+            if ( (this.top_dir !== false) ) {
+                entry = this.accessed.user.dirs[path]
+                if ( entry ) {
+                    return "user"
+                }
+            }
+            //
+            entry = this.accessed.remote.dirs[path]
+            if ( entry ) {
+                return "remote"
+            }
         }
         //
         return false
@@ -349,57 +378,36 @@ class FileOperationsWeb {
      * @param {string} path 
      * @returns string | bpolean
      */
-    file_locus(path) {
-        let entry = this.accessed.opfs.files[path]
-        if ( entry ) {
-            return "opfs"
-        }
-        //
-        entry = this.accessed.user.files[path]
-        if ( entry ) {
-            return "user"
-        }
-        //
-        entry = this.accessed.remote.files[path]
-        if ( entry ) {
-            return "remote"
+    file_locus(path,options) {
+        if ( options.locus ) {
+            let lmap = this.accessed[options.locus]
+            if ( lmap ) {
+                let entry = lmap.files[path]
+                if ( entry ) {
+                    return options.locus
+                }
+            }
+        } else {
+            let entry = this.accessed.opfs.files[path]
+            if ( entry ) {
+                return "opfs"
+            }
+            //
+            entry = this.accessed.user.files[path]
+            if ( entry ) {
+                return "user"
+            }
+            //
+            entry = this.accessed.remote.files[path]
+            if ( entry ) {
+                return "remote"
+            }
         }
         //
         return false
     }
 
 
-
-    /**
-     * Given a path to a file, this method obtains a handle for it, useful for later operations.
-     * The handle will be derived in the file system specified in *locus*. 
-     * The file handle will stored in the table, accessed under its locus in the file table.
-     * 
-     * @param {string} path 
-     * @param {string} locus 
-     */
-    async add_file(path,locus) {
-        if ( locus === undefined ) {
-            locus = "opfs"
-        }
-        try {
-            //
-            let file_handle = false
-            if ( locus === "opfs" ) {
-                file_handle = await this.opfsRoot.getFileHandle(path);
-            } else if ( locus === "user" && (this.top_dir !== false) ) {
-                file_handle = await this.top_dir.getFileHandle(path)
-            } else if ( locus === "remote" ) {
-                file_handle = await this.remote_file_com.getFileHandle(path)
-            }
-            if ( file_handle ) {
-                this.accessed[locus].files[path] = file_handle;
-            }
-            //
-        } catch (e) {
-
-        }
-    }
 
 
 
@@ -462,7 +470,7 @@ class FileOperationsWeb {
         }
         if ( (this.top_dir !== false) && this.accessed.user.files[src] ) {
             return true
-        }
+        }ce_flags
         if ( this.accessed.remote.files[src] ) {
             return true
         }
@@ -477,39 +485,146 @@ class FileOperationsWeb {
     /**
      * 
      * @param {string} path 
+     * @param {string} locus 
+     * @returns object | boolean  (dirHandle or false)
+     */
+    async get_parent_dirs(path,locus) {
+        let pth = path
+        let target_d = path
+        let path_parts = []
+        if ( pth.indexOf('/') > 0 ) {
+            path_parts = pth.split('/')
+            target_d = path_parts.pop()
+        } else {
+            return [this.top_dir,target_d]
+        }
+        let dir_handle = this.accessed[locus].dirs[pth]
+        if ( dir_handle !== undefined ) {
+            return dir_handle
+        }
+        //
+        dir_handle = this.top_dir
+        let bread_crumb = this.top_dir_name
+        if ( path_parts[0] === this.top_dir_name ) {
+            path_parts.shift()
+        }
+        //
+        for ( let dname of path_parts ) {
+            bread_crumb += `/${dname}`
+            let d_handle = this.accessed[locus].dirs[bread_crumb]
+            if ( d_handle === undefined ) {
+                d_handle = dir_handle.getDirectory(dname)
+                if ( d_handle ) {
+                    this.accessed[locus].dirs[bread_crumb] = d_handle
+                    dir_handle = d_handle
+                }
+            }
+            if ( dir_handle === undefined ) {
+                return [false,false]
+            }
+        }
+        if ( dir_handle === undefined ) {
+            return [false,false]
+        }
+        return [dir_handle,target_d]
+    }
+
+
+
+
+    /**
+     * Given a path to a file, this method obtains a handle for it, useful for later operations.
+     * The handle will be derived in the file system specified in *locus*. 
+     * The file handle will stored in the table, accessed under its locus in the file table.
+     * 
+     * 
+     * @param {string} path 
+     * @param {string} locus 
+     */
+    async add_file(path,locus) {
+        if ( locus === undefined ) {
+            locus = "opfs"
+        }
+        let file_handle = false
+        try {
+            let [parent_dir,target] = await this.get_parent_dirs(path,locus)
+            if ( parent_dir ) {
+                file_handle = await parent_dir.getFileHandle(target);
+            }
+            //
+            if ( file_handle ) {
+                this.accessed[locus].files[path] = file_handle;
+            }
+            //
+        } catch (e) {
+            return false
+        }
+        return file_handle
+    }
+
+
+
+    /**
+     * 
+     * @param {string} path 
      * @param {object} options 
      * @returns object | boolean  (dirHandle or false)
      */
-    async get_parent_user_dir(path,options) {
+    async make_parent_locus_dirs(path,locus,top_dir,top_dir_name,options) {
         let pth = path
+        let target = ""
         if ( pth.indexOf('/') > 0 ) {
             pth = path.substring(0,path.lastIndexOf('/'))
+            target = path.substring(path.lastIndexOf('/')+1)
         } else {
-            return this.top_dir
+            return [top_dir,pth]
         }
-        let dir_handle = this.accessed.user.dirs[pth]
+        let dir_handle = this.accessed[locus].dirs[pth]
         if ( dir_handle !== undefined ) {
-            return dir_handle
+            return [dir_handle,target]
         }
         if ( options.recursive ) {
             let path_parts = pth.split('/')
             //
-            let bread_crumb = this.top_dir_name
-            if ( path_parts[0] === this.top_dir_name ) {
+            let bread_crumb = top_dir_name
+            if ( path_parts[0] === top_dir_name ) {
                 path_parts.shift()
             }
+            let dir_h = top_dir
             //
-            let status = true
-            for ( let dname of path_parts ) {
-                bread_crumb += `/${dname}`
-                // locus === "user"
-                status = await this.dir_maker(bread_crumb,{ "locus" : "user" })  // don't make it recursive
-                if ( !status ) return false
+            for ( let dname of path_parts ) {4
+                try {
+                    bread_crumb += `/${dname}`
+                    const directoryHandle = await dir_h.getDirectoryHandle(dname,{create : true });
+                    this.accessed[locus].dirs[bread_crumb] = directoryHandle
+                    dir_h = directoryHandle
+                } catch (e) {
+                    return [false,false]
+                }
             }
         }
-        return false
+        return [false,false]
     }
 
+    /**
+     * 
+     * @param {*} path 
+     * @param {*} options 
+     * @returns 
+     */
+    async make_parent_user_dirs(path,options) {
+        return await this.make_parent_locus_dirs(path,"user",this.top_dir,this.top_dir_name,options)
+    }
+
+    /**
+     * 
+     * @param {*} path 
+     * @param {*} options 
+     * @returns 
+     */
+    async make_parent_opfs_dirs(path,options) {
+        return await this.make_parent_locus_dirs(path,"opfs",this.opfs_root,"",options)
+    }
 
     // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
@@ -533,10 +648,17 @@ class FileOperationsWeb {
             return false
         }
         try {
+            let pth = path
+            if ( path.indexOf('/') > 0 ) {
+                pth = `${path}/*`
+            }
+            if ( pth[0] === '/' ) {
+                pth = pth.substring(1)
+            }
             if ( (options.locus == "remote") || (options.locus === "user") ) {
                 if ( options.remote && (typeof this.remote_file_com === "function") ) {
                     let directoryHandle = await this.remote_file_com.dir_maker(path)
-                    this.accessed.user.dirs[path] = directoryHandle
+                    if ( directoryHandle ) this.accessed.remote.dirs[path] = directoryHandle
                 } else if ( (options.locus === "user") && (this.top_dir !== false) ) {
                     let opts = Object.assign({create : true },options)
                     delete opts.locus
@@ -544,19 +666,14 @@ class FileOperationsWeb {
                     if ( !ok ) {
                         ok = await this.interactive_permission()
                     }
-                    let dir_handle = ok ? await this.get_parent_user_dir(path,options) : false
-                    if ( ok && dir_handle ) {
-                        const directoryHandle = await dir_handle.getDirectoryHandle(path,opts);
-                        this.accessed.user.dirs[path] = directoryHandle
+                    if ( ok ) {
+                        await this.make_parent_user_dirs(pth,options)
                     }
                 } else {
                     return false
                 }
             } else {
-                let opts = Object.assign({create : true },options)
-                delete opts.locus
-                const directoryHandle = await this.opfsRoot.getDirectoryHandle(path, opts);
-                this.accessed.opfs.dirs[path] = directoryHandle
+                await this.make_parent_opfs_dirs(pth,options)
             }
         } catch(e) {
             return false
@@ -585,27 +702,32 @@ class FileOperationsWeb {
             if ( (options.locus == "remote") || (options.locus === "user") ) {
                 if ( options.remote && (typeof this.remote_file_com === "function") ) {
                     let fileHandle = await this.remote_file_com.file_maker(path)
-                    this.accessed.user.files[path] = fileHandle
+                    if ( fileHandle ) this.accessed.remote.files[path] = fileHandle
                 } else if ( (options.locus === "user") && (this.top_dir !== false) ) {
-                    let opts = Object.assign({create : true },options)
-                    delete opts.locus
                     let ok = await this.verifyPermission(this.top_dir,true)
                     if ( !ok ) {
                         ok = await this.interactive_permission()
                     }
-                    let dir_handle = ok ? await this.get_parent_user_dir(path,options) : false
+                    // target will be the file name
+                    let [dir_handle,target] = ok ? await this.make_parent_user_dirs(path,options) : [false,false]
                     if ( ok && dir_handle ) {
-                        const fileHandle = await dir_handle.getFileHandle(path,opts);
+                        let opts = Object.assign({create : true },options)
+                        delete opts.locus
+                        const fileHandle = await dir_handle.getFileHandle(target,opts);
                         this.accessed.user.files[path] = fileHandle
                     }
                 } else {
                     return false
                 }
             } else {
-                let opts = Object.assign({create : true },options)
-                delete opts.locus
-                const fileHandle = await this.opfsRoot.getFileHandle(path, opts);
-                this.accessed.opfs.files[path] = fileHandle
+                // target will be the file name
+                let [dir_handle,target] = await this.make_parent_opfs_dirs(path,options)
+                if ( dir_handle ) {
+                    let opts = Object.assign({create : true },options)
+                    delete opts.locus
+                    const fileHandle = await dir_handle.getFileHandle(target,opts);
+                    this.accessed.opfs.files[path] = fileHandle
+                }
             }
         } catch(e) {
             return false
@@ -668,22 +790,16 @@ class FileOperationsWeb {
      * @param {boolean} recursive -- from fsPromises 'rm' -- will remove subdirectories if true
      * @returns boolean
      */
-    async dir_remover(upath,recursive = false) {
-        let locus = this.dir_locus(upath)
+    async dir_remover(upath,options,recursive = false) {
+        let locus = this.dir_locus(path,(((typeof options === "object") && options.locus) ? options.locus : undefined))
+        if ( !locus ) { locus = "opfs" }
         try {
-            let dir_handle = false;
-            if ( locus === "user" && (this.top_dir !== false) ) {
-                dir_handle = this.top_dir
-            } else if ( locus === "opfs" ) {
-                dir_handle = this.opfsRoot
-            } else if ( locus === "remote" ) {
-                dir_handle = this.remote_file_com
-            }
+            let [dir_handle,target] = this.get_parent_dirs(upath,locus)
             if ( dir_handle ) {
                 if ( recursive ) {
-                    await dir_handle.removeEntry(upath,{ 'recursive': true })
+                    await dir_handle.removeEntry(target,{ 'recursive': true })
                 } else {
-                    await dir_handle.removeEntry(upath)
+                    await dir_handle.removeEntry(target)
                 }
                 delete this.accessed[locus].dirs[upath]
             }
@@ -705,17 +821,12 @@ class FileOperationsWeb {
      * @param {string} path 
      * @returns array - the list of files in the directory
      */
-    async dir_reader(path) {
-        let locus = this.dir_locus(path)
+    async dir_reader(path,options) {
+        let locus = this.dir_locus(path,(((typeof options === "object") && options.locus) ? options.locus : undefined))
+        if ( !locus ) locus = "opfs"
         try {
-            let dir_handle = false;
-            if ( locus === "user" && (this.top_dir !== false) ) {
-                dir_handle = this.top_dir
-            } else if ( locus === "opfs" ) {
-                dir_handle = this.opfsRoot
-            } else if ( locus === "remote" ) {
-                dir_handle = this.remote_file_com
-            }
+            let upath = path + "/*"
+            let [dir_handle,target] = this.get_parent_dirs(upath,locus)
             let files = []
             if ( dir_handle ) {
                 files = dir_handle.keys()
@@ -738,19 +849,14 @@ class FileOperationsWeb {
      * @param {string} path -- a path to the file to be removed
      * @returns boolean
      */
-    async file_remover(path) {
-        let locus = this.file_locus(path)
+    async file_remover(path,options) {
+        let locus = this.file_locus(path,(((typeof options === "object") && options.locus) ? options.locus : undefined))
+        if ( !locus ) { locus = "opfs" }
+        //
         try {
-            let dir_handle = false;
-            if ( locus === "user"&& (this.top_dir !== false) ) {
-                dir_handle = this.top_dir
-            } else if ( locus === "opfs" ) {
-                dir_handle = this.opfsRoot
-            } else if ( locus === "remote" ) {
-                dir_handle = this.remote_file_com
-            }
+            let [dir_handle,target] = this.get_parent_dirs(path,locus)
             if ( dir_handle ) {
-                await dir_handle.removeEntry(path,{ 'recursive': true })
+                await dir_handle.removeEntry(target,{ 'recursive': true })
                 delete this.accessed[locus].files[path]
             }
         } catch(e) {
@@ -762,9 +868,9 @@ class FileOperationsWeb {
 
     /**
      * write_out_string
+     * 
      * -- write string to file -- assume a valid path
      * -- guards against THROW
-     * 
      * 
      * @param {string} path -- a path to the file that will contain the string
      * @param {string} str -- a string to be written
@@ -772,10 +878,10 @@ class FileOperationsWeb {
      * @returns boolean
      */
     async write_out_string(path,str,options) {
-        let locus = this.file_locus(path)
+        let locus = this.file_locus(path,(((typeof options === "object") && options.locus) ? options.locus : undefined))
         if ( !locus ) {
             await this.file_maker(path,options)
-            locus = this.file_locus(path)
+            locus = this.file_locus(path,options)
         }
         try {
             let file_handle = false
@@ -811,10 +917,16 @@ class FileOperationsWeb {
      * @returns boolean
      */
     async write_append_string(path,str,options) {
-        let locus = this.file_locus(path)
+        let locus = this.file_locus(path,(((typeof options === "object") && options.locus) ? options.locus : undefined))
         if ( !locus ) {
-            await this.file_maker(path,options)
-            locus = this.file_locus(path)
+            let test_handle = false
+            if ( options.locus ) {
+                test_handle = await this.add_file(path,options.locus)
+                if ( !test_handle ) {
+                    await this.file_maker(path,options)
+                }
+                locus = this.file_locus(path)
+            }
         }
         try {
             let file_handle = false
@@ -846,21 +958,22 @@ class FileOperationsWeb {
      * 
      * This file returns the blob, and does not convert the data to string or a data structure.
      * 
+     * If the file has not yet been added and the options is passed with a "locus" field, 
+     * the file will be added.
+     * 
+     * The file will not be created.
+     * 
      * 
      * @param {string} a_path -- a path to the file that contains the string to be read
+     * @param {object} options -- if passed, an object indicating the locus of the file
      * @returns blob
      */ 
-    async data_reader(a_path,option) {             // possible THROW
-        let locus = this.file_locus(a_path)
+    async data_reader(a_path,options) {             // possible THROW
+        let locus = this.file_locus(path,(((typeof options === "object") && options.locus) ? options.locus : undefined))
         if ( !locus ) {
-            if ( typeof option === "object" ) {
-                if ( option.locus ) {
-                    locus = this.file_locus(a_path)
-                } else {
-                    return false
-                }
-            } else {
-                return false
+            if ( (typeof options === "object") && options.locus ) {
+                await this.add_file(path,options.locus)
+                locus = this.file_locus(path,options)
             }
         }
         try {
@@ -912,16 +1025,21 @@ class FileOperationsWeb {
      * 
      * @param {string} path_1 -- source path
      * @param {string} path_2 -- destination path
+     * @param {object} options_1 -- needs to specify locus
+     * @param {object} options_2 -- needs to specify locus
      * @returns boolean
      */
-    async file_copier(path_1,path_2,options) {
+    async file_copier(path_1,path_2,options_1,options_2) {
         try {
-            let file = await this.data_reader(path_1,options)
-            this.write_out_string(path_2,file.text())
-            return true
+            let file = await this.data_reader(path_1,options_1)
+            if ( file ) {
+                await this.write_out_string(path_2,file.text(),options_2)
+                return true
+            }
         } catch(e) {
             return false
         }
+        return false
     }
 
 
@@ -935,17 +1053,20 @@ class FileOperationsWeb {
      * 
      * @param {string} path_1 -- source path
      * @param {string} path_2 -- destination path
+     * @param {object} options_1 -- needs to specify locus
+     * @param {object} options_2 -- needs to specify locus
      * @returns boolean
      */
-    async ensured_file_copier(path_1,path_2) {
-        let status = await this.ensure_directories(path_2,false,true)
+    async ensured_file_copier(path_1,path_2,options_1,options_2) {
+        let status = await this.ensure_directories(path_2,false,options_2.locus,true,false)
         if ( status ) {
-            status = await this.file_copier(path_1,path_2)
+            status = await this.file_copier(path_1,path_2,options_1,options_2)
         }
         return status
     }
 
 
+    
     /**
      * file_mover
      * 
@@ -959,18 +1080,22 @@ class FileOperationsWeb {
      * 
      * @param {string} path_1 -- source path
      * @param {string} path_2 -- destination path
+     * @param {object} options_1 -- needs to specify locus
+     * @param {object} options_2 -- needs to specify locus
      * @returns boolean
      */
-    async file_mover(path_1,path_2) {
+    async file_mover(path_1,path_2,options_1,options_2) {
         if ( path_1 === path_2 ) {
             return true
         }
-        let status = await this.file_copier(path_1,path_2)
+        let status = await this.file_copier(path_1,path_2,options_1,options_2)
         if ( status ) {
-            status = await this.file_remover(path_1)
+            status = await this.file_remover(path_1,options_1)
         }
         return status
     }
+
+
 
     /**
      * ensured_file_mover
@@ -982,12 +1107,14 @@ class FileOperationsWeb {
      * 
      * @param {string} path_1 -- source path
      * @param {string} path_2 -- destination path
+     * @param {object} options_1 -- needs to specify locus
+     * @param {object} options_2 -- needs to specify locus
      * @returns boolean
      */
-    async ensured_file_mover(path_1,path_2) {
-        let status = await this.ensured_file_copier(path_1,path_2)
+    async ensured_file_mover(path_1,path_2,options_1,options_2) {
+        let status = await this.ensured_file_copier(path_1,path_2,options_1,options_2)
         if ( status ) {
-            status = await this.file_remover(path_1)
+            status = await this.file_remover(path_1,options_1)
         }
         return status
     }
@@ -1000,22 +1127,33 @@ class FileOperationsWeb {
      * -- wraps the access method -- assumes the path is a valid path
      * -- guards against THROW
      * 
+     * Existence is first checked against the internal tables.
+     * Failing to find a file there, the **exists** method searches the directories 
+     * within the locus expected to be articulated in the options parameter.
+     *
+     * If the file cannot be found in either place, the file assumed to not exist.
+     * This method does not look in other locations than the one that it is given.
+     * 
+     * If the option objects, exsits will look for the file in the first locus table that it can be found in.
+     * This default behavior should be kept in mind. The locus returned may be unexpected. 
+     * In some applications, providing a workable locus may be desired. In others, the locus may be more important.
+     * So, the options parameter should not be ignored.
+     * 
      * @param {string} path -- a path to the file under test
+     * @param {object} options -- fsPromises options
      * @returns boolean
      */         
-    exists(path,option) {
+    async exists(path,options) {
         try {
-            let locus = this.file_locus(path)
+            let locus = this.file_locus(path,options)
             if ( !locus ) {
-                if ( typeof option === "object" ) {
-                    if ( option.locus ) {
-                        locus = this.file_locus(path)
-                    } else {
-                        return false
-                    }
-                } else {
-                    return false
+                if ( ( typeof options === "object" ) && options.locus ) {
+                    await this.add_file(path,options.locus)
+                    locus = this.file_locus(path,options)
                 }
+            }
+            if ( !locus ) {
+                return false
             }
             return true
           } catch (e) {
@@ -1031,26 +1169,31 @@ class FileOperationsWeb {
      * -- guards against THROW
      * 
      * @param {string} path -- a path to the file under test
+     * @param {object} options -- options
      * @returns boolean
      */         
-    async exists_dir(path,option) {
+    async exists_dir(path,options) {
         try {
-            let locus = this.dir_locus(path)
+            let locus = this.dir_locus(path,options)
             if ( !locus ) {
-                if ( typeof option === "object" ) {
-                    if ( option.locus ) {
-                        locus = this.dir_locus(path)
-                    } else {
-                        return false
+                if ( ( typeof options === "object" ) && options.locus ) {
+                    let enders = await this.dir_reader(path,options)
+                    let path_list = path.split('/')
+                    let ender = path_list.pop()
+                    if ( ender ) {
+                        if ( enders.indexOf(ender) < 0 ) {
+                            return false
+                        }
+                        return true
                     }
-                } else {
-                    return false
                 }
+            } else {
+                return true
             }
-            return true
-          } catch (e) {
+        } catch (e) {
             return false
-          }
+        }
+        return false
     }
 
 
@@ -1062,13 +1205,13 @@ class FileOperationsWeb {
      * 
      * @param {string} path -- a path to the file that will contain the string
      * @param {object} obj -- a JSON stringifiable object
-     * @param {number} ce_flags -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
+     * @param {object} options -- options
      * @returns boolean
      */
-    async write_out_json(path,obj,ce_flags) {
+    async write_out_json(path,obj,options) {
         try {
             let str = JSON.stringify(obj)
-            return await this.write_out_string(path,str,ce_flags)
+            return await this.write_out_string(path,str,options)
         } catch (e) {
             console.log(path)
             console.log(e)
@@ -1090,8 +1233,8 @@ class FileOperationsWeb {
     async load_data_at_path(path) {
         try {
             if ( !(path) ) return false
-            let data = await this.data_reader(path)
-            return(data.toString())
+            let data = await this.data_reader(path,options)
+            return(data.text())
         } catch (e) {
             console.log(">>-------------load_data read------------------------")
             console.log(e)
@@ -1100,6 +1243,7 @@ class FileOperationsWeb {
         }
         return false
     }
+
 
 
     /**
@@ -1127,6 +1271,7 @@ class FileOperationsWeb {
     }
 
 
+
     /**
      * output_string
      * 
@@ -1135,21 +1280,22 @@ class FileOperationsWeb {
      * 
      * @param {string} path -- a path to the file that will contain the string
      * @param {string} str -- a string to be written
-     * @param {number} ce_flags -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
+     * @param {number} options -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
      * @param {string} top_dir -- optional as starting point for the directory
      * @returns boolean
      */
-    async output_string(path,str,ce_flags,top_dir) {
+    async output_string(path,str,options,top_dir) {
         try {
-            let final_path = await this.ensure_directories(path,top_dir,true)
+            let final_path = await this.ensure_directories(path,top_dir,options.locus,true,false)
             if ( final_path === false ) return false
-            return this.write_out_string(final_path,str,ce_flags)
+            return await this.write_out_string(final_path,str,options)
         } catch (e) {
             console.log(path)
             console.log(e)
             return false
         }
     }
+
 
 
     /**
@@ -1161,15 +1307,15 @@ class FileOperationsWeb {
      * 
      * @param {string} path -- a path to the file that will contain the string
      * @param {string} str -- a string to be written
-     * @param {number} ce_flags -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
+     * @param {number} options -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
      * @param {string} top_dir -- optional as starting point for the directory
      * @returns boolean
      */
-    async output_append_string(path,str,ce_flags,top_dir) {
+    async output_append_string(path,str,options,top_dir) {
         try {
-            let final_path = await this.ensure_directories(path,top_dir,true)
+            let final_path = await this.ensure_directories(path,top_dir,options.locus,true,false)
             if ( final_path === false ) return false
-            return this.write_append_string(final_path,str,ce_flags)
+            return await this.write_append_string(final_path,str,options)
         } catch (e) {
             console.log(path)
             console.log(e)
@@ -1178,6 +1324,7 @@ class FileOperationsWeb {
     }
     
     
+
     /**
      * output_json
      * 
@@ -1187,13 +1334,13 @@ class FileOperationsWeb {
      * 
      * @param {string} path -- a path to the file that will contain the string
      * @param {object} obj -- a string to be written
-     * @param {number} ce_flags -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
+     * @param {number} options -- options -- refer to the flags for node.js writeFile having to do with permissions, format, etc.
      * @param {string} top_dir -- optional as starting point for the directory
      * @returns boolean
      */
-    async output_json(path,obj,ce_flags,top_dir) {
+    async output_json(path,obj,options,top_dir) {
         try {
-            let final_path = await this.ensure_directories(path,top_dir,true)
+            let final_path = await this.ensure_directories(path,top_dir,options.locus,true,false)
             if ( final_path === false ) return false
             return await this.write_out_json(final_path,obj,ce_flags)
         } catch (e) {
@@ -1208,6 +1355,9 @@ class FileOperationsWeb {
      * 
      * watch
      * 
+     * This will watch a file or directory specified by path.
+     * The watch will be setup only if the file or directory has been previously
+     * added to the locus table, *accessed*.
      * 
      * 
      * @param {string} path 
@@ -1217,7 +1367,7 @@ class FileOperationsWeb {
      * 
      */
     async watch(path,callback,recursive) {
-
+        //
         let locus = this.file_locus(path)
         if ( locus ) {
             let file_handle = this.accessed[locus].files[path]
@@ -1241,18 +1391,21 @@ class FileOperationsWeb {
             }
         } else {
             locus = this.dir_locus(path)
-            let dir_handle = this.accessed[locus].dirs[path]
-            if ( dir_handle ) {
-                //
-                const dir_callback = (records, observer) => {
-                    if ( callback(records) ) {
-                        observer.disconnect();
-                    }
-                };
-                //   
-                let observer = new FileSystemObserver(dir_callback);
-                this.observers[path] = observer
-                observer.observe(dir_handle, { 'recursive' : recursive })
+            if ( locus ) {
+                let dir_handle = this.accessed[locus].dirs[path]
+                if ( dir_handle ) {
+                    //
+                    const dir_callback = (records, observer) => {
+                        if ( callback(records) ) {
+                            observer.disconnect();
+                        }
+                    };
+                    //   
+                    let observer = new FileSystemObserver(dir_callback);
+                    this.observers[path] = observer
+                    observer.observe(dir_handle, { 'recursive' : recursive })
+                }
+
             }
         }
 
@@ -1263,7 +1416,7 @@ class FileOperationsWeb {
     /**
      * copy
      * 
-     * uses cp
+     * in this browser module, this is an alias for file_copier
      * 
      * @param {string} src 
      * @param {string} dest 
@@ -1271,8 +1424,11 @@ class FileOperationsWeb {
      */
     async copy(src, dest, opts = {}) {
         try {
+            if( opts.locus === undefined ) {
+                opts.locus = "opfs"
+            }
             //
-            await this.file_copier(src,dest,opts)
+            await this.file_copier(src,dest,opts,opts)
             //
             return true
         } catch(e) {
@@ -1286,16 +1442,25 @@ class FileOperationsWeb {
     /**
      * move
      * 
+     * No async for move checks on the existence of the destination file.
+     * If it exsists and the opts parameter does not have a truthy field *overwrite*,
+     * this will return false. Otherwse, the destination file will be replaced.
+     * 
+     * The destination file will be created if it does not previously exist.
+     * 
      * @param {string} src 
      * @param {string} dest 
      * @param {object} opts 
      * @returns boolean
      */
     async move(src, dest, opts = {}) {
-        if ( this.exists(dest) && !opts.overwrite ) {
+        if ( await this.exists(dest,opts) && !opts.overwrite ) {
             return false
         }
-        return await this.file_mover(src,dest) 
+        if( opts.locus === undefined ) {
+            opts.locus = "opfs"
+        }
+        return await this.file_mover(src,dest,opts,opts) 
     }
 
     // 4,5
@@ -1305,21 +1470,19 @@ class FileOperationsWeb {
      * empties out a directory unless it does not exists.
      * If it does not exist, then it creates it with no files.
      * 
-     * @param {string} dir 
+     * @param {string} dir     
      * @param {object} options 
      */
     async emptyDir(dir,options) {
-        if ( !(await this.exists(dir)) ) {   // create an empty directory
-            await this.ensure_directories(dir)
+        if ( !(await this.exists_dir(dir,options)) ) {   // create an empty directory
+            await this.ensure_directories(dir,false,options.locus,true,false)
         } else {
-            let sep = '/'
             let promsises = []
             //
-            let dir_handle = this.accessed[options.locus].dirs[dir]
-
+            let  [dir_handle,target] = this.get_parent_dirs(`${upath}/*`,options.locus)
+            //
             if ( dir_handle ) {
-                for await (let name of dir_handle.keys()) {
-                    let entry = `${dir}${sep}${name}`
+                for await (let entry of dir_handle.keys()) {
                     promsises.push( this.dir_remover(entry,true) )
                 }
                 await Promise.all(promsises)
@@ -1336,7 +1499,7 @@ class FileOperationsWeb {
      * @returns boolean
      */
     async createFile(file) {
-        return await this.output_string(file,'')
+        return await this.file_maker(file)
     }
 
 
@@ -1411,25 +1574,6 @@ class FileOperationsWeb {
     async mkdirp (dir, options) { return this.makeDir (dir, options) }
     async ensureDir (dir, options) { return this.makeDir (dir, options) }
 
-    // 
-
-    // 34,35
-    /**
-     * areIdentical
-     * 
-     * compares fields of a stat objects including: dev and ino
-     * 
-     * @param {object} srcStat 
-     * @param {object} destStat 
-     */
-    areIdentical(srcStat, destStat) {
-        return (destStat.ino !== undefined)
-                 && (destStat.dev !== undefined) 
-                 && (destStat.ino === srcStat.ino)
-                 && (destStat.dev === srcStat.dev)
-    }
-
-
     /**
      * 
      * The application that wants to manipulate directories,
@@ -1456,6 +1600,8 @@ class FileOperationsWeb {
      */
     schedule_user_dir_request(conf) {
         //
+        if ( this.in_web_worker() ) return
+        //
         if ( typeof conf !== 'object' ) {
             throw new Error("schedule_user_dir_request: conf parameter must be an object")
         }
@@ -1481,10 +1627,7 @@ class FileOperationsWeb {
                 window.showDirectoryPicker(opts).then((dirHandle) => {
                     self.verifyPermission(dirHandle).then((p) => {
                         if ( p ) {
-                            dirHandle.resolve().then((names) => {
-                                console.log(names)
-                                self.top_dir_name = names.join('/')
-                            })
+                            self.top_dir_name = dirHandle.name
                             self.top_dir = dirHandle
                         }
                     })
@@ -1504,6 +1647,9 @@ class FileOperationsWeb {
 
 
     async interactive_permission() {      // must get a user event to pass permission tests
+        //
+        if ( this.in_web_worker() ) return
+        //
         let conf = this.conf
         if ( conf.when_dir_modal && conf.dir_modal_id ) {
             let modal_box = document.getElementById(conf.dir_modal_id)
@@ -1527,7 +1673,7 @@ class FileOperationsWeb {
      * 
      * The application that wants to download files,
      * can configure the FileOperationsWeb class to provide file 
-     * selection when they want the selection to occur. 
+     * selection when they want the selection to occur.     
      * 
      * File selection, done by the file picker, is only available in a limited number of browsers. 
      * So, an application may use a configuration permitting these operations 
@@ -1544,6 +1690,9 @@ class FileOperationsWeb {
      * @returns boolean
      */
     interactive_file_retrieval() {
+        //
+        if ( this.in_web_worker() ) return
+        //
         let conf = this.conf
         //
         if ( !("showOpenFilePicker" in window) ) {
@@ -1600,6 +1749,9 @@ class FileOperationsWeb {
      * @returns boolean
      */
     interactive_file_download() {
+        //
+        if ( this.in_web_worker() ) return
+        //
         let conf = this.conf
 
         if ( !("showSaveFilePicker" in window) ) {
@@ -1639,6 +1791,9 @@ class FileOperationsWeb {
      * @returns boolean
      */
     check_user_dir_support() {
+        //
+        if ( this.in_web_worker() ) return
+        //
         if ( !("showDirectoryPicker" in window) ) {
             console.log("showDirectoryPicker is not supported")
             return false
@@ -1650,13 +1805,21 @@ class FileOperationsWeb {
 
 
 
+
 /**
  * @classdesc
  * 
- * The FileOperationsWeb class wraps the same method names as FileOperations, but does it for web pages.
- * As such, this class uses the Origin Private File Sytems and the FileSystem classes available in 
+ * This class uses the synch methods for writing and reading. 
+ * The idea was to use the sync methods in FileOperations corresponding to calls
+ * similarly named in fs-extra. However, nothing can be really synchronouse in these
+ * methods except that finale read and write calls. 
+ * 
+ * It is possible to have method that returns the synchronous operations handle.
+ * The benefit is that the same bookkeeping for files in FileOperationsWeb
+ * can be used to gain access to the handles.
  *
  */
+
 class FileOperationsWebSync extends FileOperationsWeb {
 
     /**
@@ -1676,27 +1839,7 @@ class FileOperationsWebSync extends FileOperationsWeb {
      */
     constructor (conf) {
         super(conf)
-        this.opfsRoot = false;
-    }
-
-
-
-
-    /**
-     * createFileSync
-     * 
-     * 
-     * @param {string} file 
-     * @param {object} opts 
-     * @returns boolean
-     */
-    createFileSync(file,opts) {
-        //
-        if ( !this.exists(file) ) {
-            this.add_file(file,opts.locus)
-        }
-
-        return true//
+        this.opfs_root = false;
     }
 
     /**
@@ -1708,36 +1851,38 @@ class FileOperationsWebSync extends FileOperationsWeb {
      */
     async copySync(src, dest, opts = {}) {
         try {
-            if ( this.exists(src) ) {
-                let locus = this.file_locus(src)
+            if ( await this.exists(src,opts) ) {
+                let locus = this.file_locus(src,opts)
                 let src_file_handle = this.accessed[locus].files[src]
-                if ( !this.exists(dest) ) {
-                    this.add_file(dest,opts.locus)
+                if ( !(await this.exists(dest,opts)) ) {
+                    await this.file_maker(dest,opts)
                 }
-                locus = this.file_locus(dest)
-                let dest_file_handle = this.accessed[locus].files[dest]
-                if ( src_file_handle && dest_file_handle ) {
-                     const accessHandle = await src_file_handle.createSyncAccessHandle({
-                                                                        mode: "readwrite-unsafe",
-                                                                    });
-                    size = accessHandle.getSize();
+                locus = this.file_locus(dest,opts)
+                if ( locus ) {
+                    let dest_file_handle = this.accessed[locus].files[dest]
+                    if ( src_file_handle && dest_file_handle ) {
+                        const accessHandle = await src_file_handle.createSyncAccessHandle({
+                                                                            mode: "readwrite-unsafe",
+                                                                        });
+                        let size = accessHandle.getSize();
 
-                    const dataView = new DataView(new ArrayBuffer(size));
-                    accessHandle.read(dataView, { at: 0 });
+                        const dataView = new DataView(new ArrayBuffer(size));
+                        accessHandle.read(dataView, { at: 0 });
 
-                    //let data = this.textDecoder.decode(dataView)
+                        //let data = this.textDecoder.decode(dataView)
 
-                    // Always close FileSystemSyncAccessHandle if done.
-                    accessHandle.close();
+                        // Always close FileSystemSyncAccessHandle if done.
+                        accessHandle.close();
 
-                    const outHandle = await dest_file_handle.createSyncAccessHandle({
-                                                                        mode: "readwrite-unsafe",
-                                                                    });
-                    outHandle.write(dataView,{ at : 0 })
-                    outHandle.truncate(size)
-                    outHandle.flush()
-                    outHandle.close()
-                    return true
+                        const outHandle = await dest_file_handle.createSyncAccessHandle({
+                                                                            mode: "readwrite-unsafe",
+                                                                        });
+                        outHandle.write(dataView,{ at : 0 })
+                        outHandle.truncate(size)
+                        outHandle.flush()
+                        outHandle.close()
+                        return true
+                    }
                 }
             }
             //
@@ -1756,30 +1901,35 @@ class FileOperationsWebSync extends FileOperationsWeb {
      * @param {object} opts 
      * @returns boolean
      */
-    moveSync(src, dest, opts) {
+    async moveSync(src, dest, opts) {
         //
-        if ( this.exists(dest) && !opts.overwrite ) {
+        if ( (await this.exists(dest)) && !opts.overwrite ) {
             return false
         }
         //
         if ( this.copySync(src, dest, opts) ) {
-            (async () => { await this.file_remover(src)})()
+            (async () => { await this.file_remover(src,opts)})()
             return true
         }
         //
     }
 
 
-    async readFileSync(src) {
+    async readFileSync(src,opts) {
         try {
-            if ( this.exists(src) ) {
-                let locus = this.file_locus(src)
+            if ( opts === undefined ) {
+                opts = { "locus" : "opfs" }
+            } else if ( opts.locus === undefined ) {
+                opts.locus = "opfs"
+            }
+            if ( await this.exists(src,opts) ) {
+                let locus = this.file_locus(src,opts)
                 let src_file_handle = this.accessed[locus].files[src]
-                if ( src_file_handle && dest_file_handle ) {
+                if ( src_file_handle ) {
                     const accessHandle = await src_file_handle.createSyncAccessHandle({
                                                                         mode: "readwrite-unsafe",
                                                                     });
-                    size = accessHandle.getSize();
+                     let size = accessHandle.getSize();
 
                     const dataView = new DataView(new ArrayBuffer(size));
                     accessHandle.read(dataView, { at: 0 });
@@ -1790,7 +1940,8 @@ class FileOperationsWebSync extends FileOperationsWeb {
                 }
             }            
         } catch (e) {
-
+            console.log(e)
+            return false
         }
     }
 
@@ -1801,25 +1952,34 @@ class FileOperationsWebSync extends FileOperationsWeb {
      * outputFileSync
      * 
      * @param {string} file 
-     * @param  {...any} args 
+     * @param {string} str 
      * 
      * @returns boolean
      */
-    async outputFileSync(file, ...args) {
+    async outputFileSync(file,str,opts) {
         try {
-            if ( !this.exists(dest) ) {
-                this.add_file(dest,opts.locus)
-            }
-            locus = this.file_locus(dest)
-            let dest_file_handle = this.accessed[locus].files[dest]
             //
-            const outHandle = await dest_file_handle.createSyncAccessHandle({
-                                                                mode: "readwrite-unsafe",
-                                                            });
-            outHandle.write(dataView,{ at : 0 })
-            outHandle.truncate(size)
-            outHandle.flush()
-            outHandle.close()
+            let locus =  (typeof opts === "object") ? opts.locus : 'opfs'
+            if ( locus === undefined ) { locus = 'opfs' }
+            //
+            if ( !(await this.exists(file,opts)) ) {
+                await this.file_maker(file,opts)
+            }
+            locus = this.file_locus(file,opts)
+            if ( locus ) {
+                let dest_file_handle = this.accessed[locus].files[file]
+                //
+                if ( dest_file_handle ) {
+                    const outHandle = await dest_file_handle.createSyncAccessHandle({
+                                                                        mode: "readwrite-unsafe",
+                                                                    });
+                    const content = this.textEncoder.encode(str);
+                    outHandle.write(content, { at: 0 });
+                    //
+                    outHandle.flush()
+                    outHandle.close()
+                }
+            }
             return true
         } catch (e) {
             return false
@@ -1835,10 +1995,10 @@ class FileOperationsWebSync extends FileOperationsWeb {
      * @param {object} options 
      * @returns boolean
      */
-    outputJsonSync (file, obj, options) {
+    async outputJsonSync(file, obj, options) {
         try {
             let str = JSON.stringify(obj)
-            return this.outputFileSync(file,str,options)
+            return await this.outputFileSync(file,str,options)
         } catch (e) {
             console.log(path)
             console.log(e)
@@ -1852,9 +2012,9 @@ class FileOperationsWebSync extends FileOperationsWeb {
      * @param {string} file 
      * @param {object} options 
      */
-    readJsonSync(file,options) {
+    async readJsonSync(file,options) {
         try {
-            let str_data = this.readFileSync(file,options).text()
+            let str_data = await this.readFileSync(file,options)
             let obj = JSON.parse(str_data)
             return obj
         } catch(e) {
@@ -1872,9 +2032,10 @@ class FileOperationsWebSync extends FileOperationsWeb {
      * @param {string} path 
      * @returns boolean
      */
-    pathExists(path) {
-        return this.exists(path)
+    async pathExists(path) {
+        return await this.exists(path)
     }
 
 
 }
+

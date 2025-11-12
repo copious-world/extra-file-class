@@ -260,7 +260,7 @@ This class provides methods that are very much like FileOperations, but these me
 can only provide some degree of synchronicity when it is required. Yet, they consolodate some of the bookkeeping that is
 needed to keep track of a number of files.
 
-The calls differ only by parameters that specify the file system where the file resides. These may be *u.ser* for the file system on the user's device;
+The calls differ by parameters that specify the file system where the file resides. These may be *user* for the file system on the user's device;
 *opfs* for the Storage Access API; *remote* for files that reside across the TCP/IP connection.
 
 The *user* file system is really only accessible from browsers such as Chrome and Opera (and has been tested in Opera).

@@ -1716,6 +1716,8 @@ class FileOperationsWebSync extends FileOperationsWeb {
         this.opfs_root = false;
     }
 
+
+
     /**
      * copySync
      * 
@@ -1785,36 +1787,18 @@ class FileOperationsWebSync extends FileOperationsWeb {
         return false
     }
 
-    /**
-     * moveSync
-     * 
-     * Calls copySync and then `file_remover`.
-     * 
-     * @param {string} src 
-     * @param {string} dest 
-     * @param {object} opts 
-     * @returns boolean
-     */
-    async moveSync(src, dest, opts) {
-        //
-        if ( (await this.exists(dest)) && !opts.overwrite ) {
-            return false
-        }
-        //
-        if ( this.copySync(src, dest, opts) ) {
-            (async () => { await this.file_remover(src,opts)})()
-            return true
-        }
-        //
-    }
 
     /**
      * Returns a SyncAccessHandle. The handle should be good for reading.
+     * Use `sync_read_at_path` or `sync_read`. Close the handle with `close_async`
      * 
-     * 
+     * This method maps the file pathname *src* to the access handle by storing it in 
+     * the readables part of the `sync_handles` table. Some methods may allow for the path to 
+     * lookup the handle in order to access reading and writing.
      * 
      * @param {string} src - a path to the file
-    * @param {object} opts -- optional will default to { "locus" : "opfs" }
+     * @param {object} opts -- optional will default to { "locus" : "opfs" }
+     * @returns boolean | object - returns a Sync Access Handle if successful, otherwise false
      */
     async get_sync_readable(src,opts) {
         try {
@@ -1841,27 +1825,33 @@ class FileOperationsWebSync extends FileOperationsWeb {
     }
 
 
-
     /**
+     * Returns a SyncAccessHandle. The handle should be good for writing.
+     * Use `sync_write_at_path` or `sync_write`. Close the handle with `close_sync`
      * 
-     * @param {*} src 
-     * @param {*} opts 
+     * This method maps the file pathname *path* to the access handle by storing it in 
+     * the writeables part of the `sync_handles` table. Some methods may allow for the path to 
+     * lookup the handle in order to access reading and writing.
+     * 
+     * @param {string} path - a path to the file
+     * @param {object} opts -- optional will default to { "locus" : "opfs" }
+     * @returns boolean | object - returns a Sync Access Handle if successful, otherwise false
      */
-    async get_sync_writeable(src,opts) {
+    async get_sync_writeable(path,opts) {
         try {
             if ( opts === undefined ) {
                 opts = { "locus" : "opfs" }
             } else if ( opts.locus === undefined ) {
                 opts.locus = "opfs"
             }
-            if ( await this.exists(src,opts) ) {
-                let locus = this.file_locus(src,opts)
-                let src_file_handle = this.accessed[locus].files[src]
-                if ( src_file_handle ) {
-                    const accessHandle = await src_file_handle.createSyncAccessHandle({
+            if ( await this.exists(path,opts) ) {
+                let locus = this.file_locus(path,opts)
+                let path_file_handle = this.accessed[locus].files[path]
+                if ( path_file_handle ) {
+                    const accessHandle = await path_file_handle.createSyncAccessHandle({
                                                                         mode: "readwrite-unsafe",
                                                                     });
-                    this.sync_handles.writeables[src] = accessHandle
+                    this.sync_handles.writeables[path] = accessHandle
                     return accessHandle
                 }
             }
@@ -1873,12 +1863,18 @@ class FileOperationsWebSync extends FileOperationsWeb {
 
 
     /**
+     * Given an active sync access handle good for reading, 
+     * this will read the data and return it as a string.
      * 
-     * @param {*} accessHandle 
-     * @param {number | object} bounds 
-     * @returns string
+     * It will decide how to use the bounds parameter to get the offset into the file.
+     * If the bounds parameter is not used, it will start reading at position 0.
+     * 
+     * @param {object} accessHandle - returned by `get_sync_readable`
+     * @param {number | object} bounds - the offset into the file from where the data will be read 
+     * @returns string | boolean - returns the data in the file as a string, otherwise false if something goes wrong.
      */
     sync_read(accessHandle,bounds) {
+        let size = accessHandle.getSize();
         const dataView = new DataView(new ArrayBuffer(size));
         if ( bounds ) {
             if ( typeof bounds === "number" ) {
@@ -1898,9 +1894,14 @@ class FileOperationsWebSync extends FileOperationsWeb {
 
     /**
      * 
-     * @param {*} path 
+     * This method allows for the path to 
+     * lookup the handle in order to access reading.
+     * 
+     * If the handle can be found, this method calls the method `sync_read`.
+     * 
+     * @param {string} path 
      * @param {number | object} bounds 
-     * @returns 
+     * @returns string | boolean - returns the data in the file as a string, otherwise false if something goes wrong.
      */
     sync_read_at_path(path,bounds) {
         let accessHandle = this.sync_handles.readables[path]
@@ -1912,10 +1913,15 @@ class FileOperationsWebSync extends FileOperationsWeb {
 
 
     /**
+     * Given an active sync access handle good for writing, 
+     * this will write the data taken in as a string into a buffer and then into a file.
      * 
-     * @param {*} accessHandle 
-     * @param {*} str 
-     * @param {number | object} bounds 
+     * It will decide how to use the bounds parameter to get the offset into the file.
+     * If the bounds parameter is not used, it will start writing at position 0.
+     * 
+     * @param {object} accessHandle - returned by `get_sync_readable`
+     * @param {string} str -- string to be written to the file
+     * @param {number | object} bounds - the offset into the file where the data will be written 
      * @returns 
      */
     sync_write(accessHandle,str,bounds) {
@@ -1937,9 +1943,14 @@ class FileOperationsWebSync extends FileOperationsWeb {
 
     /**
      * 
-     * @param {string} path 
+     * This method allows for the path to 
+     * lookup the handle in order to access writing.
+     * 
+     * If the handle can be found, this method calls the method `sync_write`.
+     * 
+     * @param {string} path
      * @param {number | object} bounds 
-     * @returns 
+     * @returns boolean
      */
     sync_write_at_path(path,data,bounds) {
         let accessHandle = this.sync_handles.readables[path]
@@ -1949,11 +1960,16 @@ class FileOperationsWebSync extends FileOperationsWeb {
         return false
     }
 
+
     /**
+     * Looks in the readable and writable tables for the handle.
+     * If this method finds the handle, it calls close on it.
+     * 
+     * If the handle is for writing, then this calls the method `flush`.
      * 
      * @param {string} path 
      */
-    async close_async(path) {
+    close_sync(path) {
         let accessHandle = this.sync_handles.writeables[path]
         if ( accessHandle ) {
             accessHandle.close()
@@ -1972,93 +1988,75 @@ class FileOperationsWebSync extends FileOperationsWeb {
 
 
     /**
+     * readFileSync
      * 
-     * @param {string} src 
-     * @param {object} opts 
+     * Reads data from a file starting at 0 or at a position indicated at bounds.
+     * 
+     * @param {string} src
+     * @param {object} opts -- the opts required by `get_sync_readable`
+     * @param {number | object} bounds -- the bounds required by `sync_read`
      * @returns string
      */
-    async readFileSync(src,opts) {
+    async readFileSync(src,opts,bounds) {
+        //
         try {
-            if ( opts === undefined ) {
-                opts = { "locus" : "opfs" }
-            } else if ( opts.locus === undefined ) {
-                opts.locus = "opfs"
-            }
-            if ( await this.exists(src,opts) ) {
-                let locus = this.file_locus(src,opts)
-                let src_file_handle = this.accessed[locus].files[src]
-                if ( src_file_handle ) {
-                    const accessHandle = await src_file_handle.createSyncAccessHandle({
-                                                                        mode: "readwrite-unsafe",
-                                                                    });
-                     let size = accessHandle.getSize();
-
-                    const dataView = new DataView(new ArrayBuffer(size));
-                    accessHandle.read(dataView, { at: 0 });
-                    let data = this.textDecoder.decode(dataView)
-                    accessHandle.close();
-
-                    return data
+            let accessHandle = this.get_sync_readable(src,opts)
+            if ( accessHandle ) {
+                let data = this.sync_read(accessHandle,bounds)
+                if ( data ) {
+                    this.close_sync(src)
                 }
-            }            
+            }
         } catch (e) {
             console.log(e)
             return false
         }
+        //
     }
 
 
     /**
      * outputFileSync
      * 
-     * @param {string} file 
-     * @param {string} str 
+     * Writes data to a file starting at 0 or at a position indicated at bounds.
+     * 
+     * @param {string} file
+     * @param {string} str
+     * @param {object} opts -- the ops required by `get_sync_writeable`
+     * @param {number | object} bounds -- the bounds required by `sync_write`
      * 
      * @returns boolean
      */
     async outputFileSync(file,str,opts) {
+        //
         try {
-            //
-            let locus =  (typeof opts === "object") ? opts.locus : 'opfs'
-            if ( locus === undefined ) { locus = 'opfs' }
-            //
-            if ( !(await this.exists(file,opts)) ) {
-                await this.file_maker(file,opts)
-            }
-            locus = this.file_locus(file,opts)
-            if ( locus ) {
-                let dest_file_handle = this.accessed[locus].files[file]
-                //
-                if ( dest_file_handle ) {
-                    const outHandle = await dest_file_handle.createSyncAccessHandle({
-                                                                        mode: "readwrite-unsafe",
-                                                                    });
-                    const content = this.textEncoder.encode(str);
-                    outHandle.write(content, { at: 0 });
-                    //
-                    outHandle.flush()
-                    outHandle.close()
+            let accessHandle = this.get_sync_writeable(file,opts)
+            if ( accessHandle ) {
+                if ( this.sync_write(accessHandle,str,bounds) ) {
+                    this.close_sync(file)
                 }
             }
-            return true
         } catch (e) {
+            console.log(e)
             return false
         }
+        //
+        return true
     }
 
 
     /**
      * outputJsonSync
      * 
-     * @param {string} file 
-     * @param {object} obj 
-     * @param {object} options 
+     * @param {string} file -- file path
+     * @param {object} obj -- object this file turns into a string before calling `outputFileSync`
+     * @param {object} opts -- the ops required by `get_sync_writeable`
      * @returns boolean
      */
     async outputJsonSync(file, obj, options) {
         try {
             let str = JSON.stringify(obj)
-            return await this.outputFileSync(file,str,options)
+            return await this.outputFileSync(file,str,opts)
         } catch (e) {
             console.log(path)
             console.log(e)
@@ -2066,15 +2064,19 @@ class FileOperationsWebSync extends FileOperationsWeb {
         }
     }
 
+    
     /**
      * readJsonSync
      * 
      * @param {string} file 
-     * @param {object} options 
+     * @param {object} opts -- the opts required by `get_sync_readable`
+     * @param {number | object} bounds -- the bounds required by `sync_read`
+     * @returns boolean | object -- the object parsed from JSON stored in the file
+     * 
      */
-    async readJsonSync(file,options) {
+    async readJsonSync(file,opts) {
         try {
-            let str_data = await this.readFileSync(file,options)
+            let str_data = await this.readFileSync(file,opts)
             let obj = JSON.parse(str_data)
             return obj
         } catch(e) {

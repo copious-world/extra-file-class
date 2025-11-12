@@ -87,6 +87,11 @@ class FileOperationsWeb {
                 "changed" : {}
             }
         }
+
+        this.sync_handles = {
+            "readables" : {},
+            "writeables" : {}
+        }
     }
 
  
@@ -1500,12 +1505,25 @@ class FileOperationsWeb {
     }
 
 
+    /**
+     * interactive_permission
+     * 
+     * This is called in the main thread. 
+     * It uses document elements that are identified by fields provided in the 
+     * class configuration passed into the constructor.
+     * 
+     * This is available to an application calling `dir_maker` or `file_maker`.
+     * Those methods call this method if permission is still required by the time
+     * they are operating.
+     * 
+     * @returns Promise<string> resolves to the return value of a dialog
+     */
     async interactive_permission() {      // must get a user event to pass permission tests
         //
-        if ( this.in_web_worker() ) return
+        if ( this.in_web_worker() ) return false
         //
         let conf = this.conf
-        if ( conf.when_dir_modal && conf.dir_modal_id ) {
+        if ( conf.dir_modal_id ) {
             let modal_box = document.getElementById(conf.dir_modal_id)
             if ( modal_box ) {
                 let p = new Promise((resolve,reject) => {
@@ -1518,6 +1536,7 @@ class FileOperationsWeb {
                     })
                     modal_box.show()
                 })
+                return p
             }
         }
     }
@@ -1671,6 +1690,7 @@ class FileOperationsWeb {
  * It is possible to have method that returns the synchronous operations handle.
  * The benefit is that the same bookkeeping for files in FileOperationsWeb
  * can be used to gain access to the handles.
+ * (See `get_sync_readable` and `get_sync_writeable`)
  *
  */
 
@@ -1699,21 +1719,39 @@ class FileOperationsWebSync extends FileOperationsWeb {
     /**
      * copySync
      * 
-     * @param {string} src 
-     * @param {string} dest 
-     * @param {object} opts 
+     * This method copies two files using the Sync Access Handle.
+     * This method will only operate in a Worker thread. Furthermore, 
+     * the file system has to be OPFS in any case. 
+     * 
+     * A second opts_d is provided in case this method can actually 
+     * write to something other than OPFS if there ever is one.
+     * 
+     * For copying between two different file systems, 
+     * use `file_copier` or `ensure_file_copier`
+     * 
+     * @param {string} src -- The file to be copied
+     * @param {string} dest -- The file being created or overwritten
+     * @param {object} opts -- opts should have a field "locus"
+     * @param {object} opts_d -- opts_d should have a field "locus" for the destination
      */
-    async copySync(src, dest, opts = {}) {
+    async copySync(src, dest, opts = {}, opts_d = {}) {
         try {
+            if ( opts === undefined ) {
+                opts = { "locus" : "opfs" }
+            }
             if ( await this.exists(src,opts) ) {
                 let locus = this.file_locus(src,opts)
                 let src_file_handle = this.accessed[locus].files[src]
-                if ( !(await this.exists(dest,opts)) ) {
-                    await this.file_maker(dest,opts)
+
+
+                if ( opts_d === undefined ) opts_d = opts
+
+                if ( !(await this.exists(dest,opts_d)) ) {
+                    await this.file_maker(dest,opts_d)
                 }
-                locus = this.file_locus(dest,opts)
-                if ( locus ) {
-                    let dest_file_handle = this.accessed[locus].files[dest]
+                let locus_d = this.file_locus(dest,opts_d)
+                if ( locus && locus_d ) {
+                    let dest_file_handle = this.accessed[locus_d].files[dest]
                     if ( src_file_handle && dest_file_handle ) {
                         const accessHandle = await src_file_handle.createSyncAccessHandle({
                                                                             mode: "readwrite-unsafe",
@@ -1750,6 +1788,8 @@ class FileOperationsWebSync extends FileOperationsWeb {
     /**
      * moveSync
      * 
+     * Calls copySync and then `file_remover`.
+     * 
      * @param {string} src 
      * @param {string} dest 
      * @param {object} opts 
@@ -1767,6 +1807,169 @@ class FileOperationsWebSync extends FileOperationsWeb {
         }
         //
     }
+
+    /**
+     * Returns a SyncAccessHandle. The handle should be good for reading.
+     * 
+     * 
+     * 
+     * @param {string} src - a path to the file
+    * @param {object} opts -- optional will default to { "locus" : "opfs" }
+     */
+    async get_sync_readable(src,opts) {
+        try {
+            if ( opts === undefined ) {
+                opts = { "locus" : "opfs" }
+            } else if ( opts.locus === undefined ) {
+                opts.locus = "opfs"
+            }
+            if ( await this.exists(src,opts) ) {
+                let locus = this.file_locus(src,opts)
+                let src_file_handle = this.accessed[locus].files[src]
+                if ( src_file_handle ) {
+                    const accessHandle = await src_file_handle.createSyncAccessHandle({
+                                                                        mode: "readwrite-unsafe",
+                                                                    });
+                    this.sync_handles.readables[src] = accessHandle
+                    return accessHandle
+                }
+            }
+        } catch (e) {
+            console.log(e)
+            return false
+        }
+    }
+
+
+
+    /**
+     * 
+     * @param {*} src 
+     * @param {*} opts 
+     */
+    async get_sync_writeable(src,opts) {
+        try {
+            if ( opts === undefined ) {
+                opts = { "locus" : "opfs" }
+            } else if ( opts.locus === undefined ) {
+                opts.locus = "opfs"
+            }
+            if ( await this.exists(src,opts) ) {
+                let locus = this.file_locus(src,opts)
+                let src_file_handle = this.accessed[locus].files[src]
+                if ( src_file_handle ) {
+                    const accessHandle = await src_file_handle.createSyncAccessHandle({
+                                                                        mode: "readwrite-unsafe",
+                                                                    });
+                    this.sync_handles.writeables[src] = accessHandle
+                    return accessHandle
+                }
+            }
+        } catch (e) {
+            console.log(e)
+            return false
+        }
+    }
+
+
+    /**
+     * 
+     * @param {*} accessHandle 
+     * @param {number | object} bounds 
+     * @returns string
+     */
+    sync_read(accessHandle,bounds) {
+        const dataView = new DataView(new ArrayBuffer(size));
+        if ( bounds ) {
+            if ( typeof bounds === "number" ) {
+                accessHandle.read(dataView, { at: bounds });
+            } else if ( typeof bounds === "object" ) {
+                accessHandle.read(dataView, { at: bounds.lb });
+            } else {
+                return false
+            }
+        } else {
+            accessHandle.read(dataView, { at: 0 });
+        }
+        let data = this.textDecoder.decode(dataView)
+        return data
+    }
+
+
+    /**
+     * 
+     * @param {*} path 
+     * @param {number | object} bounds 
+     * @returns 
+     */
+    sync_read_at_path(path,bounds) {
+        let accessHandle = this.sync_handles.readables[path]
+        if ( accessHandle ) {
+            return this.sync_read(accessHandle,bounds)
+        }
+        return false
+    }
+
+
+    /**
+     * 
+     * @param {*} accessHandle 
+     * @param {*} str 
+     * @param {number | object} bounds 
+     * @returns 
+     */
+    sync_write(accessHandle,str,bounds) {
+        const content = this.textEncoder.encode(str);
+        if ( bounds ) {
+            if ( typeof bounds === "number" ) {
+                accessHandle.write(content,  { at: bounds });
+            } else if ( typeof bounds === "object" ) {
+                accessHandle.write(content,  { at: bounds.lb });
+            } else {
+                return false
+            }
+        } else {
+            accessHandle.write(content, { at: 0 });
+        }
+        return true
+    }
+
+
+    /**
+     * 
+     * @param {string} path 
+     * @param {number | object} bounds 
+     * @returns 
+     */
+    sync_write_at_path(path,data,bounds) {
+        let accessHandle = this.sync_handles.readables[path]
+        if ( accessHandle ) {
+            return this.sync_write(accessHandle,data,bounds)
+        }
+        return false
+    }
+
+    /**
+     * 
+     * @param {string} path 
+     */
+    async close_async(path) {
+        let accessHandle = this.sync_handles.writeables[path]
+        if ( accessHandle ) {
+            accessHandle.close()
+            return true
+        } else {
+            accessHandle = his.sync_handles.readables[path]
+            if ( accessHandle ) {
+                accessHandle.flush()
+                accessHandle.close()
+                return true
+            }
+        }
+        return false
+    }
+
+
 
     /**
      * 
@@ -1803,8 +2006,6 @@ class FileOperationsWebSync extends FileOperationsWeb {
             return false
         }
     }
-
-
 
 
     /**

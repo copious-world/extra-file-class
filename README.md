@@ -10,6 +10,7 @@ Otherwise, this module provides several classes with methods that make some file
 * **FileOperationsCache** -- An extension of th class FileOperations with caching
 * **DirectoryCache** -- A class object that manages objects stored in directories
 * **PathManager** -- A drop-in replacement for node.js path module with path syntax extensions and path mapping.
+* **FileOperationsWeb** -- Provides similar method names and checks as in **FileOperations** wrapping File System API
 
 > Version 1.0.0 adds support for web page files as well. These modules are accessible via roll-up. [(See below)](#web-fs)
 >
@@ -253,6 +254,20 @@ let dir_fos = new DirectoryCache({
 The PathManager class provides methods that help with a table of abbreviations that an application may use to shorten file specification in custom scripts.
 
 
+**FileOperationsWeb**
+
+This class provides methods that are very much like FileOperations, but these methods require a few other parameters and 
+can only provide some degree of synchronicity when it is required. Yet, they consolodate some of the bookkeeping that is
+needed to keep track of a number of files.
+
+The calls differ only by parameters that specify the file system where the file resides. These may be *u.ser* for the file system on the user's device;
+*opfs* for the Storage Access API; *remote* for files that reside across the TCP/IP connection.
+
+The *user* file system is really only accessible from browsers such as Chrome and Opera (and has been tested in Opera).
+The *remote* file sytem requires that the application provide a plugin for connecting.
+The *opfs* uses the same methods as the others, but also can make use of synchronous read and write operations.
+
+
 <a name="access-fs" > </a>
 ### accessing node:fs and node:fs/promises
 
@@ -277,3 +292,5 @@ async useit() {
 }
 
 ```
+
+

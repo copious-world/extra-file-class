@@ -1,39 +1,39 @@
 {
-  "name": "extra-file-class",
-  "version": "1.0.2",
-  "description": "A node.js file operations class with methods wrapping fs/promises",
-  "main": "index.js",
-  "scripts": {
-    "test": "node tests/index.js",
-    "gen-docs": "jsdoc --configure ./tools/jsdoc.conf -a all -R README.md --verbose"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/copious-world/extra-file-class.git"
-  },
-  "keywords": [
-    "fs",
-    "fsPromises",
-    "fs-extra",
-    "async",
-    "file",
-    "read",
-    "write",
-    "dir",
-    "JSON",
-    "cache"
-  ],
-  "author": "R. Leddy",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/copious-world/extra-file-class/issues"
-  },
-  "homepage": "https://github.com/copious-world/extra-file-class#readme",
-  "dependencies": {
-    "untildify": "^6.0.0"
-  },
-  "devDependencies": {
-    "docdash": "^2.0.2",
-    "jsdoc-to-markdown": "^9.1.3"
-  }
+    "name": "extra-file-class",
+    "version": "1.0.2",
+    "description": "A node.js file operations class with methods wrapping fs/promises",
+    "main": "index.js",
+    "scripts": {
+        "test": "node tests/index.js",
+        "gen-docs": "jsdoc --configure ./tools/jsdoc.conf -a all -R README.md --verbose"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/copious-world/extra-file-class.git"
+    },
+    "keywords": [
+        "fs",
+        "fsPromises",
+        "fs-extra",
+        "async",
+        "file",
+        "read",
+        "write",
+        "dir",
+        "JSON",
+        "cache"
+    ],
+    "author": "R. Leddy",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/copious-world/extra-file-class/issues"
+    },
+    "homepage": "https://github.com/copious-world/extra-file-class#readme",
+    "dependencies": {
+        "untildify": "^6.0.0"
+    },
+    "devDependencies": {
+        "docdash": "^2.0.2",
+        "jsdoc-to-markdown": "^9.1.3"
+    }
 }

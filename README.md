@@ -19,6 +19,9 @@ Otherwise, this module provides several classes with methods that make some file
 
 > Also, since 0.9.18, fs and fs/promsises are accessible via this class. [(See below)](#access-fs)
 
+> version 1.0.3  (minor change but for node 26 and ffi) removes untildify and replaces it with an ffi version (which might require C compilation for files in lib/lib in order to produce compatible library files. Addressing a cross-compile and repsitory later.) 
+> This has also been run through jslint with few problems. (Soon: reviewing this module today 10/27/26 for update to copious-transitions some more tests perhaps.)
+
 
 ## affiliation
 
@@ -30,7 +33,7 @@ This package is produced buy [copious.world ![copious.world logo](https://www.co
 
 ## Documentation
 
-The documentation for methods been moved from the README.md file to pages formatted by JSDOC. The may be found at
+The documentation for methods been moved from the README.md file to pages formatted by JSDOC. The documentation may be found at
 the following link:
 
   <a href="https://www.copious.world/docs" target="_blank" ><span style="font-weight:bold;">&#8594;</span> extra-file-class documentation</a>

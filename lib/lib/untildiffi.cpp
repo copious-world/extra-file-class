@@ -23,35 +23,39 @@ extern "C" {
                     advance = 0;
                 }
                 uint n = plen + slen + 2;
-                char *output =  &scratch[0];                        //strdup(subject_string);
-                strcpy(output,prefix);
-                if ( advance ) {
-                    output[plen] = sep;
-                    output[plen+1] = 0;
+                if ( n < SCRATCH_SIZE ) {
+                    char *output =  &scratch[0];                        //strdup(subject_string);
+                    strcpy(output,prefix);
+                    if ( advance ) {
+                        output[plen] = sep;
+                        output[plen+1] = 0;
+                    }
+                    strcat(output,pathstr + 1);
+                    return output;                    
                 }
-                strcat(output,pathstr + 1);
-                return output;
             }
         }
         return (char *)NULL;
     }
 
     char *remove_user_name(char *path, char *username, uint16_t slen, u_char sep) {
-        char *tmp = path;
-        while ( *tmp && (tmp[0] == '~') ) { tmp++; }
-        while ( *tmp && (tmp[0] == sep) ) { tmp++; }
-        char *utmp = username;
-        while ( *tmp && *utmp ) {
-            if ( tmp[0] != utmp[0] ) {
-                break;
+        if ( slen < SCRATCH_SIZE ) {
+            char *tmp = path;
+            while ( *tmp && (tmp[0] == '~') ) { tmp++; }
+            while ( *tmp && (tmp[0] == sep) ) { tmp++; }
+            char *utmp = username;
+            while ( *tmp && *utmp ) {
+                if ( tmp[0] != utmp[0] ) {
+                    break;
+                }
+                tmp++; utmp++;
             }
-            tmp++; utmp++;
-        }
-        if ( !(*utmp) ) {
-            char *output = &scratch[0];
-            output[0] = '~';
-            strcpy(output+1,tmp);
-            return output;
+            if ( !(*utmp) ) {
+                char *output = &scratch[0];
+                output[0] = '~';
+                strcpy(output+1,tmp);
+                return output;
+            }
         }
         return (char *)NULL;
     }
